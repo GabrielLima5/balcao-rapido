@@ -1,0 +1,51 @@
+.painel-atendimento {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-panel);
+  height: 100%;
+  min-height: 0;
+}
+
+.painel-atendimento__topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.painel-atendimento__titulo {
+  font-size: 1.05rem;
+}
+
+.painel-atendimento__pedido {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.painel-atendimento__cancelar {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.painel-atendimento__cancelar:hover {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.painel-atendimento__conteudo {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}

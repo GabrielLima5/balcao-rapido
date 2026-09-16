@@ -1,0 +1,37 @@
+.fila {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.fila__topo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.fila__titulo {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+}
+
+.fila__contagem {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.fila__cartoes {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  min-height: 118px;
+}
+
+.fila__vazia {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  align-self: center;
+}

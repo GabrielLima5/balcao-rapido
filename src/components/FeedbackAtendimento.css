@@ -1,0 +1,37 @@
+.feedback-atendimento-wrap {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  pointer-events: none;
+  width: min(420px, 90vw);
+}
+
+.feedback-atendimento {
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-panel);
+  border: 1px solid var(--color-border);
+  font-size: 0.85rem;
+}
+
+.feedback-atendimento--positivo {
+  background: rgba(63, 207, 127, 0.14);
+  border-color: var(--color-success);
+  color: var(--color-text);
+}
+
+.feedback-atendimento--negativo {
+  background: rgba(239, 91, 91, 0.14);
+  border-color: var(--color-danger);
+  color: var(--color-text);
+}
+
+.feedback-atendimento ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

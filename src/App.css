@@ -1,0 +1,63 @@
+.app {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app__jogo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+.app__area-atendimento {
+  flex: 1;
+  min-height: 0;
+  padding: 16px 20px 24px;
+  display: flex;
+}
+
+.app__placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: 0.9rem;
+}
+
+.app__pausado {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 14, 12, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+
+.app__pausado-card {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px 34px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-panel);
+}
+
+.app__pausado-card button {
+  background: var(--color-accent-strong);
+  border: none;
+  color: #04231a;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+}

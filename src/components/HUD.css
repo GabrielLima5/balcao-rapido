@@ -1,0 +1,137 @@
+.hud {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 20px;
+  background: var(--color-panel);
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.hud__turno {
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+}
+
+.hud__turno-nome {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.hud__turno-meta {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.hud__tempo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 64px;
+}
+
+.hud__tempo-label {
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hud__tempo-valor {
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud__tempo--urgente .hud__tempo-valor {
+  color: var(--color-danger);
+}
+
+.hud__reputacao {
+  flex: 1;
+  min-width: 160px;
+  max-width: 320px;
+}
+
+.hud__reputacao-topo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  margin-bottom: 4px;
+}
+
+.hud__reputacao-barra {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.hud__reputacao-preenchimento {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.hud__reputacao-preenchimento--baixa {
+  background: var(--color-danger);
+}
+
+.hud__reputacao-preenchimento--media {
+  background: var(--color-warning);
+}
+
+.hud__reputacao-preenchimento--alta {
+  background: var(--color-success);
+}
+
+.hud__reputacao-meta {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--color-text);
+  opacity: 0.6;
+}
+
+.hud__score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 70px;
+}
+
+.hud__score-label {
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hud__score-valor {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.hud__acoes {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.hud__botao {
+  background: var(--color-panel-alt);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+}
+
+.hud__botao:hover {
+  border-color: var(--color-accent);
+}

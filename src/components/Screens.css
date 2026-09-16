@@ -1,0 +1,245 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 14, 12, 0.72);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.overlay__card {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+  padding: 28px 32px;
+  width: min(560px, 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.overlay__card--selecao,
+.overlay__card--ajuda {
+  width: min(720px, 100%);
+}
+
+.overlay__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  color: var(--color-accent);
+  margin: 0;
+}
+
+.overlay__titulo {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.overlay__titulo--sucesso {
+  color: var(--color-success);
+}
+
+.overlay__titulo--falha {
+  color: var(--color-danger);
+}
+
+.overlay__texto {
+  color: var(--color-text);
+  line-height: 1.5;
+  font-size: 0.92rem;
+}
+
+.overlay__texto--muted {
+  color: var(--color-muted);
+  font-size: 0.82rem;
+}
+
+.overlay__acoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.overlay__botao {
+  padding: 11px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-panel-alt);
+  color: var(--color-text);
+}
+
+.overlay__botao--primario {
+  border-color: var(--color-accent);
+  background: var(--color-accent-strong);
+  color: #04231a;
+  font-weight: 700;
+}
+
+.overlay__botao--primario:hover {
+  background: var(--color-accent);
+}
+
+.overlay__botao--secundario:hover {
+  border-color: var(--color-accent);
+}
+
+.overlay__link {
+  background: none;
+  border: none;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  padding: 0;
+}
+
+.overlay__link:hover {
+  color: var(--color-accent);
+}
+
+.overlay__topo-com-voltar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* --- Seleção de turno --- */
+
+.selecao-turno__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.selecao-turno__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  padding: 14px;
+  background: var(--color-panel-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  min-height: 130px;
+  position: relative;
+}
+
+.selecao-turno__item:not(:disabled):hover {
+  border-color: var(--color-accent);
+}
+
+.selecao-turno__item--bloqueado {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.selecao-turno__numero {
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+}
+
+.selecao-turno__nome {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.selecao-turno__dificuldade {
+  font-size: 0.7rem;
+  color: var(--color-accent);
+  text-transform: capitalize;
+}
+
+.selecao-turno__resumo {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  line-height: 1.3;
+}
+
+.selecao-turno__resultado {
+  margin-top: auto;
+  font-size: 0.72rem;
+  color: var(--color-muted);
+}
+
+.selecao-turno__resultado--ok {
+  color: var(--color-success);
+}
+
+.selecao-turno__cadeado {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+/* --- Resultado do turno --- */
+
+.resultado-turno__grade {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: var(--color-panel-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.resultado-turno__grade > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.resultado-turno__numero {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.resultado-turno__label {
+  font-size: 0.68rem;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.resultado-turno__erros {
+  background: rgba(239, 91, 91, 0.1);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.resultado-turno__erros h3 {
+  font-size: 0.82rem;
+  margin: 0 0 8px;
+}
+
+.resultado-turno__erros ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.78rem;
+}
+
+/* --- Ajuda --- */
+
+.ajuda__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 20px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}

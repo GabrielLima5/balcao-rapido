@@ -1,0 +1,83 @@
+:root {
+  --color-bg: #0f1a17;
+  --color-bg-alt: #142521;
+  --color-panel: #1a2e29;
+  --color-panel-alt: #21362f;
+  --color-border: #2c463d;
+  --color-text: #eef7f2;
+  --color-muted: #9db3ac;
+  --color-accent: #2fbf8f;
+  --color-accent-strong: #1f9d7c;
+  --color-accent-soft: rgba(47, 191, 143, 0.16);
+
+  --color-success: #3fcf7f;
+  --color-warning: #f2b84b;
+  --color-danger: #ef5b5b;
+  --color-danger-strong: #d43f3f;
+
+  --color-patience-full: #3fcf7f;
+  --color-patience-mid: #f2b84b;
+  --color-patience-low: #ef5b5b;
+
+  --color-controlled-red: #e2574c;
+  --color-controlled-black: #8a5cf6;
+
+  --shadow-card: 0 10px 26px rgba(0, 0, 0, 0.35);
+  --shadow-panel: 0 18px 44px rgba(0, 0, 0, 0.45);
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+
+  --font-main: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: radial-gradient(circle at top, var(--color-bg-alt), var(--color-bg) 70%);
+  color: var(--color-text);
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 8px;
+}
