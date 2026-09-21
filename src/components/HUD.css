@@ -135,3 +135,10 @@
 .hud__botao:hover {
   border-color: var(--color-accent);
 }
+
+/* sair é destrutivo (perde o turno em andamento) — fica marcado, mas discreto
+   até o hover, para não competir com Ajuda/Pausar no fluxo normal */
+.hud__botao--sair:hover {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}

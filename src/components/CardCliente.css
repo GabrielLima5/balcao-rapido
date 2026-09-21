@@ -80,3 +80,46 @@
 .card-cliente__paciencia-preenchimento--baixa {
   background: var(--color-patience-low);
 }
+
+.card-cliente__topo {
+  position: relative;
+}
+
+/* "−4s" que sobe e some quando uma pergunta é feita */
+.card-cliente__custo {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-warning);
+  pointer-events: none;
+}
+
+.card-cliente__rodape {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-cliente__rodape > .card-cliente__paciencia {
+  flex: 1;
+}
+
+.card-cliente__segundos {
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted);
+  min-width: 26px;
+  text-align: right;
+}
+
+.card-cliente__segundos--media {
+  color: var(--color-patience-mid);
+}
+
+.card-cliente__segundos--baixa {
+  color: var(--color-patience-low);
+  font-weight: 700;
+}

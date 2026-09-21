@@ -1,34 +1,45 @@
 // Validador de conteúdo: em vez de um BFS ótimo (que não se traduz bem a uma
 // simulação soft real-time), simula um "jogador razoável" dirigindo as
-// funções REAIS da engine (tick/startService/attemptServe/resolveDistraction)
-// em loop. Isso também funciona como cobertura de regressão comportamental da
-// engine, já que o projeto não usa um framework de testes — ver README.
+// funções REAIS da engine (tick/startService/askQuestion/attemptServe/
+// resolveDistraction) em loop. Isso também funciona como cobertura de
+// regressão comportamental da engine, já que o projeto não usa um framework de
+// testes — ver README.
+//
+// O jogador simulado agora também CONDUZ A ANAMNESE: antes de decidir, faz as
+// perguntas que aquele atendimento exigia. Isso é o que garante que os turnos
+// continuam vencíveis depois que perguntar passou a custar paciência — um turno
+// que só fecha se o jogador adivinhar sem perguntar é um turno mal calibrado.
 
 import { PRODUCTS, getProductById } from './products.js'
-import { RULE_FACTORIES, evaluateAll } from './rules.js'
+import { RULE_FACTORIES, evaluateAll, productSatisfiesRequest } from './rules.js'
+import { camposCriticos, jaPerguntou } from './anamnese.js'
 import {
   createShiftState,
+  arrivalToCustomer,
   tick,
   startService,
+  askQuestion,
   attemptServe,
   resolveDistraction,
+  findServableItem,
   getActiveCustomer,
   summarize,
 } from './engine.js'
 
 const STEP_MS = 500
-const SERVICE_BASE_MS = 6000
-const SERVICE_PER_RULE_MS = 1500
+const SERVICE_BASE_MS = 5000
+const SERVICE_PER_RULE_MS = 1200
+// tempo real que o jogador gasta clicando/lendo cada resposta da anamnese — a
+// paciência do cliente entrevistado já é cobrada pela engine; isto aqui é a
+// pressão que a entrevista coloca sobre o RESTO da fila.
+const SERVICE_PER_QUESTION_MS = 700
 const REPUTATION_SLACK = 8
 const MAX_GUARD_ITERATIONS = 20000
 
 function candidateItemsFor(customer, shift) {
-  if (customer.request.type === 'produto') {
-    return shift.estoque.filter((s) => s.produtoId === customer.request.produtoId)
-  }
-  const wantedPrincipios =
-    customer.request.type === 'receita' ? customer.itensPendentes : customer.request.principiosAceitos
-  return shift.estoque.filter((s) => wantedPrincipios?.includes(getProductById(s.produtoId)?.principioAtivo))
+  return shift.estoque.filter((s) =>
+    productSatisfiesRequest(getProductById(s.produtoId), customer.request, customer),
+  )
 }
 
 // Ground truth: dado um cliente e o estoque do turno, decide qual item e qual
@@ -41,7 +52,7 @@ function decideAction(shift, customer) {
   let best = null
   for (const shelfItem of candidates) {
     const product = getProductById(shelfItem.produtoId)
-    const violations = evaluateAll({ product, shelfItem, customer, options: { receitaRetida: true } })
+    const violations = evaluateAll({ product, shelfItem, customer, options: { receitaRetida: true, orientacaoDada: true } })
     const blocking = violations.some((v) => v.blocksSale)
     if (!blocking) {
       return { itemId: shelfItem.id, decision: 'entregar', violations: [] }
@@ -85,19 +96,34 @@ export function simulateShift(shift, options = {}) {
       continue
     }
 
-    const customer = getActiveCustomer(state)
+    let customer = getActiveCustomer(state)
     if (!customer) {
       state = { ...state, activeCustomerId: null }
       continue
     }
 
+    // 1. anamnese: pergunta o que esse atendimento exigia (a engine cobra a
+    //    paciência do cliente entrevistado em cada pergunta).
+    let perguntasFeitas = 0
+    for (const campo of camposCriticos(customer, shift)) {
+      if (jaPerguntou(customer, campo)) continue
+      const res = askQuestion(state, customer.id, campo)
+      state = res.state
+      customer = getActiveCustomer(state) ?? customer
+      perguntasFeitas += 1
+    }
+
+    // 2. decide com base na verdade sobre o paciente
     const decision = decideAction(shift, customer)
     if (!decision) {
       error = `Sem item válido no estoque para atender "${customer.nome}" (${customer.id}) — pedido: ${JSON.stringify(customer.request)}`
       break
     }
 
-    const thinkMs = SERVICE_BASE_MS + decision.violations.length * SERVICE_PER_RULE_MS
+    const thinkMs =
+      SERVICE_BASE_MS +
+      perguntasFeitas * SERVICE_PER_QUESTION_MS +
+      decision.violations.length * SERVICE_PER_RULE_MS
     let elapsed = 0
     while (elapsed < thinkMs && state.status === 'playing' && state.activeDistractions.length === 0) {
       const step = Math.min(stepMs, thinkMs - elapsed)
@@ -108,9 +134,12 @@ export function simulateShift(shift, options = {}) {
     }
     if (state.status !== 'playing') break
     if (state.activeDistractions.length > 0) continue
+    // o cliente pode ter ido embora durante a entrevista/consulta
+    if (!getActiveCustomer(state)) continue
 
     const res = attemptServe(state, shift, customer.id, decision.itemId, decision.decision, {
       receitaRetida: true,
+      orientacaoDada: true,
     })
     state = res.state
     trace.push(res.event)
@@ -144,10 +173,26 @@ function checkReferentialIntegrity(shift) {
     if (arrival.request.type === 'produto' && !productIds.has(arrival.request.produtoId)) {
       problems.push(`arrivals["${arrival.id}"]: produtoId desconhecido "${arrival.request.produtoId}"`)
     }
+    if (arrival.request.type === 'generico') {
+      if (!productIds.has(arrival.request.produtoReferenciaId)) {
+        problems.push(
+          `arrivals["${arrival.id}"]: produtoReferenciaId desconhecido "${arrival.request.produtoReferenciaId}"`,
+        )
+      }
+      if (!arrival.request.principioAtivo || !arrival.request.dose) {
+        problems.push(`arrivals["${arrival.id}"]: pedido de genérico sem principioAtivo/dose`)
+      }
+    }
     if (arrival.request.type === 'receita') {
       if (!arrival.request.itens?.length || arrival.request.itens.length > 3) {
         problems.push(`arrivals["${arrival.id}"]: receita precisa ter entre 1 e 3 itens`)
       }
+    }
+    if (arrival.paciente && typeof arrival.paciente.idade !== 'number') {
+      problems.push(`arrivals["${arrival.id}"]: paciente de terceiro precisa declarar idade`)
+    }
+    if (arrival.paciente && !arrival.paciente.descricao) {
+      problems.push(`arrivals["${arrival.id}"]: paciente de terceiro precisa de "descricao" (ex.: "minha mãe")`)
     }
   }
 
@@ -163,8 +208,69 @@ function checkReferentialIntegrity(shift) {
   return problems
 }
 
+// Estado mínimo para exercitar attemptServe fora de uma partida completa.
+function loneCustomerState(customer) {
+  return {
+    status: 'playing',
+    clockMs: 0,
+    durationMs: 999999,
+    reputation: 60,
+    reputationTarget: 100,
+    minReputation: 0,
+    score: 0,
+    served: 0,
+    lost: 0,
+    queue: [customer],
+    activeCustomerId: customer.id,
+    arrivalsPending: [],
+    log: [],
+  }
+}
+
+// Regressão do exploit "pego qualquer coisa errada e clico Recusar".
+//
+// Recusar tem que ser julgado pelo CLIENTE, não pelo item que o jogador estava
+// segurando: enquanto existir na prateleira algo que atenda aquele cliente com
+// segurança, recusar é errado — mesmo segurando um item que de fato não podia
+// ser vendido (produto errado, lote vencido tendo lote bom ao lado).
+function checkRefusalIntegrity(shift) {
+  const problems = []
+
+  for (const arrival of shift.arrivals) {
+    const customer = arrivalToCustomer(arrival)
+    const atendivel = findServableItem(shift, customer)
+    if (!atendivel) continue // cliente que realmente deve ser recusado
+
+    for (const shelfItem of shift.estoque) {
+      if (shelfItem.id === atendivel.id) continue
+      const product = getProductById(shelfItem.produtoId)
+      const violations = evaluateAll({ product, shelfItem, customer, options: { receitaRetida: true, orientacaoDada: true } })
+      if (violations.length === 0) continue // esse item também atendia; não é o caso de teste
+
+      const { event } = attemptServe(
+        loneCustomerState(customer),
+        shift,
+        customer.id,
+        shelfItem.id,
+        'recusar',
+        { receitaRetida: true, orientacaoDada: true },
+      )
+      if (event.type !== 'refuse_incorrect') {
+        problems.push(
+          `recusa premiada indevidamente: "${arrival.id}" podia ser atendido com ` +
+            `"${atendivel.produtoId}", mas recusar segurando "${shelfItem.produtoId}" ` +
+            `resultou em "${event.type}"`,
+        )
+        return problems // um exemplo basta
+      }
+    }
+  }
+
+  return problems
+}
+
 export function validateShift(shift) {
-  const problems = checkReferentialIntegrity(shift)
+  const problems = [...checkReferentialIntegrity(shift), ...checkRefusalIntegrity(shift)]
   const { state, trace, error } = simulateShift(shift)
   if (error) problems.push(error)
 
@@ -179,7 +285,18 @@ export function validateShift(shift) {
       )
     }
     if (summary.lost > 0) {
-      problems.push(`${summary.lost} cliente(s) perdido(s) por impaciência mesmo com atendimento ideal`)
+      problems.push(
+        `${summary.lost} cliente(s) perdido(s) por impaciência mesmo com atendimento ideal ` +
+          `(a anamnese cabe no orçamento de paciência? ver patienceMaxMs)`,
+      )
+    }
+    // Um jogador que faz a entrevista direito não deveria acertar "no escuro":
+    // se isso acontece, camposCriticos não está enxergando o turno.
+    if (summary.acertosNoEscuro > 0) {
+      problems.push(
+        `${summary.acertosNoEscuro} decisão(ões) certa(s) sem anamnese completa mesmo com o jogador ideal ` +
+          `perguntando tudo que era crítico — inconsistência em camposCriticos`,
+      )
     }
   }
 
@@ -200,10 +317,7 @@ export function validateShift(shift) {
 function reachableViolationTags(shift) {
   const tags = new Set()
   for (const arrival of shift.arrivals) {
-    const customer = {
-      ...arrival,
-      itensPendentes: arrival.request.type === 'receita' ? arrival.request.itens.map((i) => i.principioAtivo) : null,
-    }
+    const customer = arrivalToCustomer(arrival)
     for (const shelfItem of shift.estoque) {
       const product = getProductById(shelfItem.produtoId)
       const violations = evaluateAll({ product, shelfItem, customer, options: { receitaRetida: false } })

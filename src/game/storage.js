@@ -49,3 +49,26 @@ export function resetProgress() {
   writeRaw({ unlockedIndex: 0, results: {} })
   return { unlockedIndex: 0, results: {} }
 }
+
+// Aceite do aviso de marcas e de conteúdo. Fica separado do progresso de
+// propósito: resetar o progresso do jogo não deve fazer o jogador aceitar o
+// aviso de novo — e apagar o aceite não deve custar o progresso dele.
+const AVISO_KEY = 'balcao-rapido:aviso-aceito'
+
+export function getAvisoAceito() {
+  try {
+    return window.localStorage.getItem(AVISO_KEY) === '1'
+  } catch {
+    // sem localStorage o aviso reaparece a cada sessão — que é o lado seguro
+    return false
+  }
+}
+
+export function aceitarAviso() {
+  try {
+    window.localStorage.setItem(AVISO_KEY, '1')
+  } catch {
+    // falha silenciosa: o jogo segue, o aviso só volta na próxima sessão
+  }
+  return true
+}

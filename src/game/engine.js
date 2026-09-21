@@ -3,10 +3,11 @@
 // Nenhuma função aqui toca DOM, timers ou Date.now() — quem dirige o relógio é
 // src/hooks/useGameClock.js, que chama tick(state, deltaMs) a cada frame. A UI
 // (App.jsx) só chama createShiftState e as funções de transição abaixo; toda a
-// lógica de fila, paciência, reputação e vitória/derrota vive aqui.
+// lógica de fila, paciência, anamnese, reputação e vitória/derrota vive aqui.
 
 import { getProductById } from './products.js'
-import { evaluateAll } from './rules.js'
+import { evaluateAll, productSatisfiesRequest } from './rules.js'
+import { anamneseCompleta, criticasNaoPerguntadas, getPergunta, responder } from './anamnese.js'
 
 export const REPUTATION_MAX = 100
 
@@ -23,6 +24,12 @@ const SERVE_SUCCESS_PATIENCE_BONUS = 60
 const REFUSE_CORRECT_SCORE = 30
 const ITEM_SUCCESS_REPUTATION = 3
 const ITEM_SUCCESS_SCORE = 40
+
+// Bônus por ter decidido COM a informação na mão: todas as perguntas que aquele
+// atendimento exigia foram feitas antes de entregar/recusar. Não existe punição
+// por decidir no escuro e acertar — só a ausência deste bônus. Ver
+// src/game/anamnese.js#camposCriticos.
+const ANAMNESE_BONUS_SCORE = 35
 
 const DEFAULT_DISTRACTION_DURATION_MS = 12000
 
@@ -55,11 +62,11 @@ function clampReputation(value) {
   return clamp(value, 0, REPUTATION_MAX)
 }
 
-// Produtos "seguros" para clientes de preenchimento: sem contraindicação,
-// sem interação, sem receita/controle — para não introduzir uma pegadinha
-// nova que o turno não planejou. Se o turno não tiver nenhum produto seguro
-// disponível (bem avançado, tudo tem alguma regra), cai para qualquer item
-// dentro da validade — ainda assim consistente com as regras do turno.
+// Produtos "seguros" para clientes de preenchimento: sem contraindicação, sem
+// interação, sem receita/controle e sem apresentação restrita a uma faixa
+// etária — para não introduzir uma pegadinha nova que o turno não planejou. Se
+// o turno não tiver nenhum produto assim, cai para qualquer item dentro da
+// validade — ainda assim consistente com as regras do turno.
 function buildFillerPool(shift) {
   const seguros = shift.estoque.filter((item) => {
     if (item.validadeStatus !== 'ok') return false
@@ -69,7 +76,8 @@ function buildFillerPool(shift) {
       !produto.exigeReceita &&
       produto.classeControlada === 'nenhuma' &&
       produto.contraindicacoes.length === 0 &&
-      produto.interacoes.length === 0
+      produto.interacoes.length === 0 &&
+      produto.publicoAlvo !== 'pediatrico'
     )
   })
   const pool = seguros.length > 0 ? seguros : shift.estoque.filter((item) => item.validadeStatus === 'ok')
@@ -155,7 +163,33 @@ export function createShiftState(shift) {
   return state
 }
 
-function arrivalToCustomer(arrival) {
+// Quem vai tomar o remédio. Quando o turno não diz nada, é o próprio cliente —
+// assim todo conteúdo antigo continua válido sem precisar repetir os dados.
+function normalizePaciente(arrival) {
+  const p = arrival.paciente
+  if (!p) {
+    return {
+      relacao: 'proprio',
+      descricao: 'o próprio cliente',
+      pronome: 'ele',
+      idade: arrival.idade,
+      tags: arrival.tags ?? [],
+      jaTomaPrincipiosAtivos: arrival.jaTomaPrincipiosAtivos ?? [],
+      alergias: arrival.alergias ?? [],
+    }
+  }
+  return {
+    relacao: p.relacao ?? 'terceiro',
+    descricao: p.descricao,
+    pronome: p.pronome ?? 'ela',
+    idade: p.idade,
+    tags: p.tags ?? [],
+    jaTomaPrincipiosAtivos: p.jaTomaPrincipiosAtivos ?? [],
+    alergias: p.alergias ?? [],
+  }
+}
+
+export function arrivalToCustomer(arrival) {
   return {
     id: arrival.id,
     nome: arrival.nome,
@@ -164,9 +198,14 @@ function arrivalToCustomer(arrival) {
     tags: arrival.tags ?? [],
     hasReceita: Boolean(arrival.hasReceita),
     jaTomaPrincipiosAtivos: arrival.jaTomaPrincipiosAtivos ?? [],
+    paciente: normalizePaciente(arrival),
     request: arrival.request,
+    // Anamnese: começa vazia. O que o jogador não perguntar continua oculto na
+    // ficha — mas as regras seguem valendo sobre a verdade.
+    perguntasFeitas: [],
+    anamnese: [],
     // Receita com 1-3 itens: lista de princípios ativos ainda não entregues.
-    // null para pedidos de item único (produto/sintoma).
+    // null para pedidos de item único (produto/genérico/sintoma).
     itensPendentes:
       arrival.request.type === 'receita' ? arrival.request.itens.map((i) => i.principioAtivo) : null,
     patienceMaxMs: arrival.patienceMaxMs,
@@ -226,6 +265,7 @@ function spawnDueDistractions(state) {
         tipo: distraction.tipo,
         options: distraction.options ?? null,
         correctChoiceId: distraction.correctChoiceId ?? null,
+        enunciado: distraction.enunciado ?? null,
         expiresAtMs: state.clockMs + (distraction.durationMs ?? DEFAULT_DISTRACTION_DURATION_MS),
       },
     ]
@@ -321,6 +361,40 @@ export function cancelService(state, customerId) {
   return { state: { ...state, queue, activeCustomerId: null }, event: { type: 'service_cancelled', customerId } }
 }
 
+// Pergunta da anamnese: revela um dado do cliente e cobra o preço em paciência.
+// O que não for perguntado continua oculto na ficha — mas as regras seguem
+// valendo sobre a verdade, perguntada ou não.
+export function askQuestion(state, customerId, perguntaId) {
+  if (state.status !== 'playing') {
+    return { state, event: { type: 'idle' } }
+  }
+  const customer = state.queue.find((c) => c.id === customerId)
+  const pergunta = getPergunta(perguntaId)
+  if (!customer || !pergunta || customer.perguntasFeitas.includes(perguntaId)) {
+    return { state, event: { type: 'idle' } }
+  }
+
+  const resposta = responder(customer, perguntaId)
+  const entrada = { perguntaId, label: pergunta.label, resposta }
+  const queue = state.queue.map((c) =>
+    c.id === customerId
+      ? {
+          ...c,
+          // nunca zera direto: quem gastou toda a paciência do cliente
+          // perguntando o vê ir embora no próximo tick, como qualquer outro.
+          patienceMs: Math.max(1, c.patienceMs - pergunta.custoMs),
+          perguntasFeitas: [...c.perguntasFeitas, perguntaId],
+          anamnese: [...c.anamnese, entrada],
+        }
+      : c,
+  )
+
+  return {
+    state: { ...state, queue },
+    event: { type: 'question_answered', customerId, ...entrada },
+  }
+}
+
 function finishStatusCheck(state) {
   if (state.status === 'playing' && state.reputation <= state.minReputation) {
     return { ...state, status: 'lost' }
@@ -328,7 +402,49 @@ function finishStatusCheck(state) {
   return state
 }
 
-// attemptServe(state, shift, clienteId, produtoId, decisao, options)
+// --- avaliação da recusa -----------------------------------------------------
+//
+// Uma recusa NÃO é julgada pelo item que o jogador por acaso estava segurando:
+// é julgada pelo cliente. Recusar só é a decisão certa quando NADA na prateleira
+// poderia ser entregue àquele cliente sem violar alguma regra. Pegar um produto
+// obviamente errado (ou o lote vencido, tendo um lote bom ao lado) e recusar
+// resolve o item, mas não resolve o problema de quem está no balcão.
+//
+// A retenção de receita entra como `true` aqui de propósito: reter é uma ação do
+// jogador, não uma propriedade do estoque, então um controlado com receita em
+// mãos conta como atendível.
+export function findServableItem(shift, customer) {
+  return (
+    shift.estoque.find((shelfItem) => {
+      const product = getProductById(shelfItem.produtoId)
+      if (!product) return false
+      return evaluateAll({ product, shelfItem, customer, options: { receitaRetida: true, orientacaoDada: true } }).length === 0
+    }) ?? null
+  )
+}
+
+// Por que esse cliente era mesmo para ser recusado: pega o item que mais se
+// aproxima do que ele pediu e devolve o que trava a venda dele.
+function motivoDaRecusa(shift, customer) {
+  let melhor = null
+  for (const shelfItem of shift.estoque) {
+    const product = getProductById(shelfItem.produtoId)
+    if (!product || !productSatisfiesRequest(product, customer.request, customer)) continue
+    const violations = evaluateAll({ product, shelfItem, customer, options: { receitaRetida: true, orientacaoDada: true } })
+    if (!melhor || violations.length < melhor.length) melhor = violations
+  }
+  if (melhor && melhor.length > 0) return melhor
+  return [
+    {
+      id: 'semOpcaoNaPrateleira',
+      tag: 'semOpcaoNaPrateleira',
+      blocksSale: true,
+      message: `Não havia na prateleira nada que atendesse o pedido de ${customer.nome}.`,
+    },
+  ]
+}
+
+// attemptServe(state, shift, clienteId, itemId, decisao, options)
 //   decisao: 'entregar' | 'recusar'
 export function attemptServe(state, shift, customerId, itemId, decision, options = {}) {
   if (state.status !== 'playing') {
@@ -341,8 +457,10 @@ export function attemptServe(state, shift, customerId, itemId, decision, options
   }
   const product = getProductById(shelfItem.produtoId)
   const violations = evaluateAll({ product, shelfItem, customer, options })
-  const blocked = violations.some((v) => v.blocksSale)
   const patienceRatio = clamp(customer.patienceMs / customer.patienceMaxMs, 0, 1)
+
+  const anamneseOk = anamneseCompleta(customer, shift)
+  const faltouPerguntar = criticasNaoPerguntadas(customer, shift)
 
   // Receita com mais de um item pendente: uma entrega correta resolve só esse
   // item e mantém o cliente na fila (em atendimento) para os próximos — o
@@ -371,6 +489,7 @@ export function attemptServe(state, shift, customerId, itemId, decision, options
   let type
   let reputationDelta = 0
   let scoreDelta = 0
+  let eventViolations = violations
 
   if (decision === 'entregar' && violations.length === 0) {
     type = 'serve_success'
@@ -379,14 +498,31 @@ export function attemptServe(state, shift, customerId, itemId, decision, options
   } else if (decision === 'entregar') {
     type = 'serve_error'
     reputationDelta = -SERVE_ERROR_REPUTATION_PER_VIOLATION * violations.length
-  } else if (decision === 'recusar' && blocked) {
-    type = 'refuse_correct'
-    reputationDelta = REFUSE_CORRECT_REPUTATION
-    scoreDelta = REFUSE_CORRECT_SCORE
   } else {
-    type = 'refuse_incorrect'
-    reputationDelta = -REFUSE_INCORRECT_REPUTATION
+    const atendivel = findServableItem(shift, customer)
+    if (atendivel) {
+      type = 'refuse_incorrect'
+      reputationDelta = -REFUSE_INCORRECT_REPUTATION
+      eventViolations = [
+        {
+          id: 'recusaEvitavel',
+          tag: 'recusaEvitavel',
+          blocksSale: false,
+          message:
+            `Havia como atender ${customer.nome} com segurança — ` +
+            `${getProductById(atendivel.produtoId).nome} resolvia o pedido sem violar nenhuma regra.`,
+        },
+      ]
+    } else {
+      type = 'refuse_correct'
+      reputationDelta = REFUSE_CORRECT_REPUTATION
+      scoreDelta = REFUSE_CORRECT_SCORE
+      eventViolations = motivoDaRecusa(shift, customer)
+    }
   }
+
+  const decisaoCerta = type === 'serve_success' || type === 'refuse_correct'
+  if (decisaoCerta && anamneseOk) scoreDelta += ANAMNESE_BONUS_SCORE
 
   const queue = state.queue.filter((c) => c.id !== customerId)
   const activeCustomerId = state.activeCustomerId === customerId ? null : state.activeCustomerId
@@ -396,7 +532,9 @@ export function attemptServe(state, shift, customerId, itemId, decision, options
     customerNome: customer.nome,
     produtoId: shelfItem.produtoId,
     decision,
-    violations,
+    violations: eventViolations,
+    anamneseOk,
+    faltouPerguntar,
     atMs: state.clockMs,
   }
 
@@ -414,7 +552,16 @@ export function attemptServe(state, shift, customerId, itemId, decision, options
 
   return {
     state: next,
-    event: { type, customerId, product, violations, decision, patienceRatio },
+    event: {
+      type,
+      customerId,
+      product,
+      violations: eventViolations,
+      decision,
+      patienceRatio,
+      anamneseOk,
+      faltouPerguntar,
+    },
   }
 }
 
@@ -465,10 +612,14 @@ export function remainingSeconds(state) {
 }
 
 export function summarize(state) {
+  const decisoes = state.log.filter((e) =>
+    ['serve_success', 'serve_error', 'refuse_correct', 'refuse_incorrect'].includes(e.type),
+  )
   const errors = state.log.filter((e) => e.type === 'serve_error').length
   const refusedCorrect = state.log.filter((e) => e.type === 'refuse_correct').length
   const refusedIncorrect = state.log.filter((e) => e.type === 'refuse_incorrect').length
   const successes = state.log.filter((e) => e.type === 'serve_success').length
+  const decisoesCertas = decisoes.filter((e) => e.type === 'serve_success' || e.type === 'refuse_correct')
   return {
     status: state.status,
     reputation: state.reputation,
@@ -480,5 +631,10 @@ export function summarize(state) {
     errors,
     refusedCorrect,
     refusedIncorrect,
+    // quantas decisões certas foram tomadas já sabendo o que precisava saber
+    anamneseCompleta: decisoesCertas.filter((e) => e.anamneseOk).length,
+    decisoesCertas: decisoesCertas.length,
+    // acertos "no escuro": certos, mas decididos sem ter feito as perguntas
+    acertosNoEscuro: decisoesCertas.filter((e) => !e.anamneseOk).length,
   }
 }

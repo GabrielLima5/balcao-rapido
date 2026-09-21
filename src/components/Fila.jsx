@@ -2,7 +2,7 @@ import { AnimatePresence } from 'framer-motion'
 import CardCliente from './CardCliente.jsx'
 import './Fila.css'
 
-export default function Fila({ queue, activeCustomerId, maxQueueVisible, onSelecionar }) {
+export default function Fila({ queue, activeCustomerId, maxQueueVisible, onSelecionar, custoPergunta }) {
   return (
     <div className="fila">
       <div className="fila__topo">
@@ -18,6 +18,7 @@ export default function Fila({ queue, activeCustomerId, maxQueueVisible, onSelec
               key={customer.id}
               customer={customer}
               isActive={customer.id === activeCustomerId}
+              custoPergunta={custoPergunta?.customerId === customer.id ? custoPergunta : null}
               onClick={onSelecionar}
             />
           ))}

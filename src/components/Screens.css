@@ -243,3 +243,24 @@
   font-size: 0.85rem;
   line-height: 1.4;
 }
+
+.resultado-turno__numero--alerta {
+  color: var(--color-warning);
+}
+
+.ajuda__subtitulo {
+  font-size: 0.9rem;
+  color: var(--color-accent);
+  margin-top: 6px;
+}
+
+/* aviso de marcas + isenção clínica: precisa ser lido, não escondido */
+.overlay__aviso {
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--color-muted);
+  background: rgba(242, 184, 75, 0.08);
+  border: 1px solid rgba(242, 184, 75, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}

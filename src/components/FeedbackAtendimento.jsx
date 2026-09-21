@@ -23,10 +23,17 @@ export default function FeedbackAtendimento({ feedback }) {
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 380, damping: 28 }}
             className={`feedback-atendimento ${
-              POSITIVE_TYPES.has(feedback.type) ? 'feedback-atendimento--positivo' : 'feedback-atendimento--negativo'
+              feedback.variante === 'alerta'
+                ? 'feedback-atendimento--alerta'
+                : POSITIVE_TYPES.has(feedback.type)
+                  ? 'feedback-atendimento--positivo'
+                  : 'feedback-atendimento--negativo'
             }`}
           >
-            <strong>{TITLES[feedback.type] ?? 'Atendimento'}</strong>
+            <strong>
+              {TITLES[feedback.type] ?? 'Atendimento'}
+              {feedback.variante === 'alerta' && ' — no escuro'}
+            </strong>
             {feedback.messages?.length > 0 && (
               <ul>
                 {feedback.messages.map((msg, i) => (

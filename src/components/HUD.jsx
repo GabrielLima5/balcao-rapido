@@ -8,7 +8,16 @@ function formatClock(seconds) {
   return `${m}:${String(s).padStart(2, '0')}`
 }
 
-export default function HUD({ shift, remainingSeconds, reputation, reputationTarget, score, onAjuda, onPausar }) {
+export default function HUD({
+  shift,
+  remainingSeconds,
+  reputation,
+  reputationTarget,
+  score,
+  onAjuda,
+  onPausar,
+  onSair,
+}) {
   const ratio = Math.min(1, reputation / Math.max(reputationTarget, 1))
   const nivel = reputation < reputationTarget * 0.5 ? 'baixa' : reputation < reputationTarget ? 'media' : 'alta'
   const urgente = remainingSeconds <= 20
@@ -50,6 +59,9 @@ export default function HUD({ shift, remainingSeconds, reputation, reputationTar
         </button>
         <button type="button" className="hud__botao" onClick={onPausar}>
           Pausar
+        </button>
+        <button type="button" className="hud__botao hud__botao--sair" onClick={onSair}>
+          Sair do turno
         </button>
       </div>
     </div>

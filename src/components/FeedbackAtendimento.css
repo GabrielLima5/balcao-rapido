@@ -35,3 +35,10 @@
   flex-direction: column;
   gap: 4px;
 }
+
+/* decisão certa tomada sem a anamnese: acertou, mas não por saber */
+.feedback-atendimento--alerta {
+  background: rgba(242, 184, 75, 0.14);
+  border-color: var(--color-warning);
+  color: var(--color-text);
+}

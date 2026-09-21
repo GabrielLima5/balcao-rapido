@@ -5,12 +5,14 @@ import {
   tick,
   startService,
   cancelService,
+  askQuestion,
   attemptServe,
   resolveDistraction,
   remainingSeconds,
 } from './game/engine.js'
+import { getPergunta } from './game/anamnese.js'
 import { SHIFTS } from './game/shifts.js'
-import { getProgress, recordShiftCompletion } from './game/storage.js'
+import { aceitarAviso, getAvisoAceito, getProgress, recordShiftCompletion } from './game/storage.js'
 import * as sound from './game/sound.js'
 import { useGameClock } from './hooks/useGameClock.js'
 
@@ -19,7 +21,8 @@ import Fila from './components/Fila.jsx'
 import PainelAtendimento from './components/PainelAtendimento.jsx'
 import FeedbackAtendimento from './components/FeedbackAtendimento.jsx'
 import DistracaoOverlay from './components/DistracaoOverlay.jsx'
-import { TelaInicio, SelecaoTurno, TelaResultadoTurno, TelaAjuda } from './components/Screens.jsx'
+import ModalConfirmacao from './components/ModalConfirmacao.jsx'
+import { TelaAviso, TelaInicio, SelecaoTurno, TelaResultadoTurno, TelaAjuda } from './components/Screens.jsx'
 
 import './App.css'
 
@@ -27,10 +30,27 @@ const FEEDBACK_TYPES = new Set(['serve_success', 'serve_error', 'refuse_correct'
 
 function buildFeedback(event) {
   if (!event || !FEEDBACK_TYPES.has(event.type)) return null
+  const messages = (event.violations ?? []).map((v) => v.message)
+
+  // Decidiu certo sem ter feito as perguntas que importavam: não custa
+  // reputação, mas é o momento de dizer que aquilo foi sorte, não atendimento.
+  const acertouNoEscuro =
+    (event.type === 'serve_success' || event.type === 'refuse_correct') && event.faltouPerguntar?.length > 0
+  if (acertouNoEscuro) {
+    const perguntas = event.faltouPerguntar.map((id) => `“${getPergunta(id)?.label}”`).join(' ')
+    messages.push(`Deu certo, mas você decidiu sem perguntar: ${perguntas}`)
+  }
+  // Errou e a informação que teria evitado o erro estava a uma pergunta de distância.
+  if (event.type === 'serve_error' && event.faltouPerguntar?.length > 0) {
+    const perguntas = event.faltouPerguntar.map((id) => `“${getPergunta(id)?.label}”`).join(' ')
+    messages.push(`Você não chegou a perguntar: ${perguntas}`)
+  }
+
   return {
     key: `${event.type}-${event.customerId}-${Date.now()}`,
     type: event.type,
-    messages: (event.violations ?? []).map((v) => v.message),
+    variante: acertouNoEscuro ? 'alerta' : null,
+    messages,
   }
 }
 
@@ -39,16 +59,27 @@ export default function App() {
   const [shiftIndex, setShiftIndex] = useState(0)
   const [shiftState, setShiftState] = useState(() => createShiftState(SHIFTS[0]))
   const [progress, setProgress] = useState(() => getProgress())
+  const [avisoAceito, setAvisoAceito] = useState(() => getAvisoAceito())
   const [atendimentoAtivo, setAtendimentoAtivo] = useState(null)
   const [feedback, setFeedback] = useState(null)
+  // "−4s" flutuante no cartão de quem acabou de responder uma pergunta
+  const [custoPergunta, setCustoPergunta] = useState(null)
   const [paused, setPaused] = useState(false)
   const [mostrarAjuda, setMostrarAjuda] = useState(false)
+  const [confirmandoSaida, setConfirmandoSaida] = useState(false)
 
   const shift = SHIFTS[shiftIndex]
   const resultadoRegistrado = useRef(false)
 
   // --- relógio do turno ------------------------------------------------
-  const tickAtivo = screen === 'jogando' && !paused && !mostrarAjuda && shiftState.status === 'playing'
+  // o relógio do turno para enquanto qualquer coisa modal está aberta — decidir
+  // se vai sair não pode custar clientes ao jogador
+  const tickAtivo =
+    screen === 'jogando' &&
+    !paused &&
+    !mostrarAjuda &&
+    !confirmandoSaida &&
+    shiftState.status === 'playing'
   useGameClock(tickAtivo, (deltaMs) => {
     const { state, events } = tick(shiftState, deltaMs)
     setShiftState(state)
@@ -91,13 +122,22 @@ export default function App() {
     return () => clearTimeout(timeout)
   }, [feedback])
 
+  // o "−4s" também
+  useEffect(() => {
+    if (!custoPergunta) return undefined
+    const timeout = setTimeout(() => setCustoPergunta(null), 900)
+    return () => clearTimeout(timeout)
+  }, [custoPergunta])
+
   function startShift(index) {
     resultadoRegistrado.current = false
     setShiftIndex(index)
     setShiftState(createShiftState(SHIFTS[index]))
     setAtendimentoAtivo(null)
     setFeedback(null)
+    setCustoPergunta(null)
     setPaused(false)
+    setConfirmandoSaida(false)
     setScreen('jogando')
   }
 
@@ -108,6 +148,19 @@ export default function App() {
       setAtendimentoAtivo({ customerId, step: 'prateleira', selectedItem: null })
       sound.playClick()
     }
+  }
+
+  function handlePerguntar(perguntaId) {
+    if (!atendimentoAtivo) return
+    const { state, event } = askQuestion(shiftState, atendimentoAtivo.customerId, perguntaId)
+    setShiftState(state)
+    if (event.type !== 'question_answered') return
+    sound.playClick()
+    setCustoPergunta({
+      customerId: atendimentoAtivo.customerId,
+      custoMs: getPergunta(perguntaId)?.custoMs ?? 0,
+      key: `${atendimentoAtivo.customerId}-${perguntaId}`,
+    })
   }
 
   function handleSelecionarItem(item) {
@@ -150,6 +203,20 @@ export default function App() {
     }
   }
 
+  // Abandonar o turno: nada é gravado em `progress`, porque recordShiftCompletion
+  // só roda quando um turno TERMINA. O estado volta ao início do turno para o
+  // caso de o jogador reabri-lo depois — sair não é pausar, é desistir.
+  function handleConfirmarSaida() {
+    resultadoRegistrado.current = false
+    setConfirmandoSaida(false)
+    setAtendimentoAtivo(null)
+    setFeedback(null)
+    setCustoPergunta(null)
+    setPaused(false)
+    setShiftState(createShiftState(SHIFTS[shiftIndex]))
+    setScreen('inicio')
+  }
+
   function handleResolverDistracao(distractionId, choiceId) {
     const { state, event } = resolveDistraction(shiftState, distractionId, choiceId)
     setShiftState(state)
@@ -172,12 +239,14 @@ export default function App() {
             score={shiftState.score}
             onAjuda={() => setMostrarAjuda(true)}
             onPausar={() => setPaused((p) => !p)}
+            onSair={() => setConfirmandoSaida(true)}
           />
 
           <Fila
             queue={shiftState.queue}
             activeCustomerId={shiftState.activeCustomerId}
             maxQueueVisible={shiftState.maxQueueVisible}
+            custoPergunta={custoPergunta}
             onSelecionar={handleSelecionarCliente}
           />
 
@@ -191,6 +260,7 @@ export default function App() {
                   step={atendimentoAtivo.step}
                   selectedItem={atendimentoAtivo.selectedItem}
                   onSelecionarItem={handleSelecionarItem}
+                  onPerguntar={handlePerguntar}
                   onVoltarPrateleira={handleVoltarPrateleira}
                   onEntregar={(options) => handleDecisao('entregar', options)}
                   onRecusar={(options) => handleDecisao('recusar', options)}
@@ -208,23 +278,54 @@ export default function App() {
             <div className="app__pausado">
               <div className="app__pausado-card">
                 <h2>Pausado</h2>
-                <button type="button" onClick={() => setPaused(false)}>
-                  Continuar
-                </button>
+                {/* o overlay de pausa cobre o HUD, então a saída precisa estar
+                    aqui também — senão o jogador teria que despausar só para
+                    conseguir desistir do turno. */}
+                <div className="app__pausado-acoes">
+                  <button type="button" onClick={() => setPaused(false)}>
+                    Continuar
+                  </button>
+                  <button
+                    type="button"
+                    className="app__pausado-sair"
+                    onClick={() => setConfirmandoSaida(true)}
+                  >
+                    Sair do turno
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
           <DistracaoOverlay distraction={distracaoAtiva} onResolver={handleResolverDistracao} />
           <FeedbackAtendimento feedback={feedback} />
+
+          <ModalConfirmacao
+            aberto={confirmandoSaida}
+            titulo="Sair do turno?"
+            mensagem={`Você volta para o menu inicial e perde tudo o que fez em "${shift.nome}" — reputação, pontos e clientes atendidos. O turno não será registrado e vai começar do zero na próxima vez.`}
+            textoCancelar="Continuar atendendo"
+            textoConfirmar="Sair e perder o progresso"
+            onCancelar={() => setConfirmandoSaida(false)}
+            onConfirmar={handleConfirmarSaida}
+          />
         </div>
       )}
 
       <AnimatePresence mode="wait">
-        {screen === 'inicio' && !mostrarAjuda && (
+        {!avisoAceito && (
+          <TelaAviso
+            key="aviso"
+            onAceitar={() => {
+              aceitarAviso()
+              setAvisoAceito(true)
+            }}
+          />
+        )}
+        {avisoAceito && screen === 'inicio' && !mostrarAjuda && (
           <TelaInicio key="inicio" onJogar={() => setScreen('selecao')} onComoJogar={() => setMostrarAjuda(true)} />
         )}
-        {screen === 'selecao' && !mostrarAjuda && (
+        {avisoAceito && screen === 'selecao' && !mostrarAjuda && (
           <SelecaoTurno
             key="selecao"
             shifts={SHIFTS}

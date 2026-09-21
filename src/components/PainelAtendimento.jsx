@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
+import Anamnese from './Anamnese.jsx'
 import Prateleira from './Prateleira.jsx'
 import ConfirmacaoEntrega from './ConfirmacaoEntrega.jsx'
 import './PainelAtendimento.css'
@@ -9,6 +10,7 @@ export default function PainelAtendimento({
   step,
   selectedItem,
   onSelecionarItem,
+  onPerguntar,
   onVoltarPrateleira,
   onEntregar,
   onRecusar,
@@ -40,8 +42,12 @@ export default function PainelAtendimento({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="painel-atendimento__conteudo"
+            className="painel-atendimento__conteudo painel-atendimento__conteudo--balcao"
           >
+            {/* entrevista e prateleira lado a lado de propósito: perguntar não é
+                uma etapa antes de escolher, é uma decisão que compete com ela
+                pelo mesmo tempo. */}
+            <Anamnese customer={customer} onPerguntar={onPerguntar} />
             <Prateleira shift={shift} onSelecionarItem={onSelecionarItem} />
           </motion.div>
         ) : (

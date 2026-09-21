@@ -79,3 +79,34 @@
   color: var(--color-controlled-black);
   border-color: var(--color-controlled-black);
 }
+
+.prateleira__item-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.prateleira__item-tag--generico {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.prateleira__item-tag--infantil {
+  color: var(--color-warning);
+  border-color: var(--color-warning);
+}
+
+.prateleira__item-dose {
+  text-transform: none;
+}
+
+.prateleira__item-classe {
+  font-size: 0.7rem;
+  line-height: 1.25;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  align-self: flex-start;
+}

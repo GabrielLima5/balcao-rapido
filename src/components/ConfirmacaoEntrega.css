@@ -107,3 +107,42 @@
 .confirmacao__botao--entregar:hover {
   background: var(--color-accent);
 }
+
+/* a ficha agora é mais longa (composição, apresentação, contraindicações) e
+   pode passar da altura do painel — rola dentro da própria coluna. */
+.confirmacao__coluna {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.confirmacao__atencao {
+  color: var(--color-warning);
+}
+
+/* dado que o jogador não perguntou: visivelmente ausente, não "vazio" */
+.confirmacao__oculto {
+  color: var(--color-muted);
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.confirmacao__oculto::before {
+  content: '? ';
+}
+
+.confirmacao__condutas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* cautela é amarelo (avaliar), retenção é verde (obrigatório e objetivo) —
+   as duas condutas não podem parecer a mesma coisa */
+.confirmacao__checkbox--cautela {
+  background: rgba(242, 184, 75, 0.1);
+  border-color: var(--color-warning);
+}
+
+.confirmacao__classe {
+  color: var(--color-accent);
+}

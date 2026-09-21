@@ -49,3 +49,30 @@
   display: flex;
   flex-direction: column;
 }
+
+/* balcão = entrevista à esquerda, prateleira à direita. A anamnese tem largura
+   fixa para a prateleira não encolher conforme as respostas vão chegando. */
+.painel-atendimento__conteudo--balcao {
+  flex-direction: row;
+  gap: 14px;
+}
+
+.painel-atendimento__conteudo--balcao > .anamnese {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.painel-atendimento__conteudo--balcao > .prateleira {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .painel-atendimento__conteudo--balcao {
+    flex-direction: column;
+  }
+
+  .painel-atendimento__conteudo--balcao > .anamnese {
+    width: auto;
+  }
+}

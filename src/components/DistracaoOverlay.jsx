@@ -29,7 +29,7 @@ export default function DistracaoOverlay({ distraction, onResolver }) {
               </div>
             ) : (
               <div className="distracao__acoes distracao__acoes--coluna">
-                <p className="distracao__pergunta">Qual é o troco correto?</p>
+                <p className="distracao__pergunta">{distraction.enunciado ?? 'Qual é o troco correto?'}</p>
                 {distraction.options.map((opt) => (
                   <button key={opt.id} type="button" onClick={() => onResolver(distraction.id, opt.id)}>
                     {opt.label}

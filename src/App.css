@@ -53,6 +53,12 @@
   box-shadow: var(--shadow-panel);
 }
 
+.app__pausado-acoes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
 .app__pausado-card button {
   background: var(--color-accent-strong);
   border: none;
@@ -60,4 +66,16 @@
   font-weight: 700;
   padding: 10px 20px;
   border-radius: var(--radius-sm);
+}
+
+.app__pausado-card .app__pausado-sair {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+.app__pausado-card .app__pausado-sair:hover {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
