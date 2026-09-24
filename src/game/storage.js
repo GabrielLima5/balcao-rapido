@@ -1,6 +1,8 @@
 // Progresso salvo em localStorage: turnos desbloqueados e melhor resultado de
 // cada turno já jogado. Sem backend, sem conta de usuário.
 
+import { normalizarPerfil } from './rewards.js'
+
 const STORAGE_KEY = 'balcao-rapido:progress'
 
 function readRaw() {
@@ -32,12 +34,21 @@ export function getProgress() {
 
 // Registra o resultado de um turno e desbloqueia o próximo se o jogador
 // passou. `shiftIndex` é a posição do turno na lista SHIFTS.
-export function recordShiftCompletion(shiftIndex, { won, score, reputation }) {
+// Estrelas e "já venceu" nunca regridem: uma partida pior depois não apaga a
+// melhor, mesmo quando o melhor placar em pontos veio de outra partida.
+export function recordShiftCompletion(shiftIndex, { won, score, reputation, estrelas = 0 }) {
   const progress = getProgress()
   const previous = progress.results[shiftIndex]
   const best = previous && previous.score > score ? previous : { won, score, reputation }
 
-  const results = { ...progress.results, [shiftIndex]: best }
+  const results = {
+    ...progress.results,
+    [shiftIndex]: {
+      ...best,
+      won: Boolean(best.won || previous?.won || won),
+      estrelas: Math.max(previous?.estrelas ?? 0, estrelas),
+    },
+  }
   const unlockedIndex = won ? Math.max(progress.unlockedIndex, shiftIndex + 1) : progress.unlockedIndex
 
   const next = { unlockedIndex, results }
@@ -48,6 +59,29 @@ export function recordShiftCompletion(shiftIndex, { won, score, reputation }) {
 export function resetProgress() {
   writeRaw({ unlockedIndex: 0, results: {} })
   return { unlockedIndex: 0, results: {} }
+}
+
+// Perfil de gamificação (moedas, XP, conquistas, loja, presente diário). Chave
+// própria: o formato vive em rewards.js#perfilInicial e normalizarPerfil
+// completa o que faltar num save antigo.
+const PERFIL_KEY = 'balcao-rapido:perfil'
+
+export function getPerfil() {
+  try {
+    const raw = window.localStorage.getItem(PERFIL_KEY)
+    return normalizarPerfil(raw ? JSON.parse(raw) : null)
+  } catch {
+    return normalizarPerfil(null)
+  }
+}
+
+export function savePerfil(perfil) {
+  try {
+    window.localStorage.setItem(PERFIL_KEY, JSON.stringify(perfil))
+  } catch {
+    // mesma política do progresso: sem persistência, mas o jogo segue
+  }
+  return perfil
 }
 
 // Aceite do aviso de marcas e de conteúdo. Fica separado do progresso de

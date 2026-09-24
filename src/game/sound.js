@@ -69,3 +69,35 @@ export function playLose() {
 export function playClick() {
   tone({ freq: 500, durationMs: 40, type: 'sine', gain: 0.04 })
 }
+
+// --- gamificação ---
+
+export function playCoin() {
+  tone({ freq: 1320, durationMs: 60, type: 'square', gain: 0.035 })
+  tone({ freq: 1760, durationMs: 110, type: 'square', gain: 0.035, delayMs: 55 })
+}
+
+// sobe meio tom a cada passo do combo, até um teto — o ouvido percebe a sequência
+export function playCombo(combo) {
+  const passo = Math.min(combo, 10)
+  const base = 440 * Math.pow(2, passo / 12)
+  tone({ freq: base, durationMs: 80, type: 'triangle', gain: 0.06 })
+  tone({ freq: base * 1.5, durationMs: 120, type: 'triangle', gain: 0.05, delayMs: 60 })
+}
+
+export function playComboBroken() {
+  tone({ freq: 392, durationMs: 90, type: 'triangle', gain: 0.05 })
+  tone({ freq: 294, durationMs: 160, type: 'triangle', gain: 0.05, delayMs: 80 })
+}
+
+export function playAchievement() {
+  ;[784, 988, 1175, 1568].forEach((freq, i) => tone({ freq, durationMs: 180, delayMs: i * 90, type: 'triangle', gain: 0.07 }))
+}
+
+export function playStar(index) {
+  tone({ freq: 880 * Math.pow(2, (index * 4) / 12), durationMs: 220, type: 'sine', gain: 0.08 })
+}
+
+export function playChest() {
+  ;[523, 659, 784, 1046, 1318].forEach((freq, i) => tone({ freq, durationMs: 140, delayMs: i * 70, type: 'square', gain: 0.04 }))
+}

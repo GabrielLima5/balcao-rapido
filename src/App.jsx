@@ -9,10 +9,29 @@ import {
   attemptServe,
   resolveDistraction,
   remainingSeconds,
+  summarize,
 } from './game/engine.js'
 import { getPergunta } from './game/anamnese.js'
 import { SHIFTS } from './game/shifts.js'
-import { aceitarAviso, getAvisoAceito, getProgress, recordShiftCompletion } from './game/storage.js'
+import {
+  aceitarAviso,
+  getAvisoAceito,
+  getPerfil,
+  getProgress,
+  recordShiftCompletion,
+  savePerfil,
+} from './game/storage.js'
+import {
+  BAUS_ESTRELAS,
+  abrirBau,
+  aplicarRecompensasDoTurno,
+  bauDisponivel,
+  calcularEstrelas,
+  comprarItem,
+  equiparItem,
+  presenteDisponivel,
+  resgatarPresenteDiario,
+} from './game/rewards.js'
 import * as sound from './game/sound.js'
 import { useGameClock } from './hooks/useGameClock.js'
 
@@ -23,10 +42,20 @@ import FeedbackAtendimento from './components/FeedbackAtendimento.jsx'
 import DistracaoOverlay from './components/DistracaoOverlay.jsx'
 import ModalConfirmacao from './components/ModalConfirmacao.jsx'
 import { TelaAviso, TelaInicio, SelecaoTurno, TelaResultadoTurno, TelaAjuda } from './components/Screens.jsx'
+import { PresenteDiario, TelaConquistas, TelaLoja, ToastsConquista } from './components/Recompensas.jsx'
 
 import './App.css'
 
 const FEEDBACK_TYPES = new Set(['serve_success', 'serve_error', 'refuse_correct', 'refuse_incorrect', 'serve_item_success'])
+
+// Data local 'AAAA-MM-DD' — o presente diário vira à meia-noite do jogador, não
+// à meia-noite UTC.
+function hojeLocal() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+const TOAST_DURACAO_MS = 4200
 
 function buildFeedback(event) {
   if (!event || !FEEDBACK_TYPES.has(event.type)) return null
@@ -51,11 +80,14 @@ function buildFeedback(event) {
     type: event.type,
     variante: acertouNoEscuro ? 'alerta' : null,
     messages,
+    moedas: event.moedasGanhas ?? 0,
+    combo: event.combo ?? 0,
+    comboQuebrado: Boolean(event.comboQuebrado),
   }
 }
 
 export default function App() {
-  const [screen, setScreen] = useState('inicio') // 'inicio' | 'selecao' | 'jogando' | 'resultado'
+  const [screen, setScreen] = useState('inicio') // 'inicio' | 'selecao' | 'jogando' | 'resultado' | 'conquistas' | 'loja'
   const [shiftIndex, setShiftIndex] = useState(0)
   const [shiftState, setShiftState] = useState(() => createShiftState(SHIFTS[0]))
   const [progress, setProgress] = useState(() => getProgress())
@@ -67,6 +99,15 @@ export default function App() {
   const [paused, setPaused] = useState(false)
   const [mostrarAjuda, setMostrarAjuda] = useState(false)
   const [confirmandoSaida, setConfirmandoSaida] = useState(false)
+
+  // --- gamificação ---
+  const [perfil, setPerfil] = useState(() => getPerfil())
+  const [relatorio, setRelatorio] = useState(null)
+  const [toasts, setToasts] = useState([])
+  const [reacaoMascote, setReacaoMascote] = useState(null)
+  const [mostrarPresente, setMostrarPresente] = useState(false)
+  const [hoje, setHoje] = useState(() => hojeLocal())
+  const presenteOferecido = useRef(false)
 
   const shift = SHIFTS[shiftIndex]
   const resultadoRegistrado = useRef(false)
@@ -86,8 +127,29 @@ export default function App() {
     for (const event of events) {
       if (event.type === 'customer_left_impatient') sound.playImpatientLeave()
       if (event.type === 'distraction_expired') sound.playError()
+      if (event.type === 'combo_broken') {
+        sound.playComboBroken()
+        reagirMascote('triste')
+      }
     }
   })
+
+  // tema comprado na loja: troca só as variáveis de cor (ver index.css)
+  useEffect(() => {
+    document.documentElement.dataset.theme = perfil.loja.tema
+  }, [perfil.loja.tema])
+
+  // o dia pode virar com o jogo aberto; conferir ao voltar para o menu basta
+  useEffect(() => {
+    if (screen === 'inicio') setHoje(hojeLocal())
+  }, [screen])
+
+  // o presente diário se oferece sozinho uma vez por sessão, no menu inicial
+  useEffect(() => {
+    if (!avisoAceito || screen !== 'inicio' || presenteOferecido.current) return
+    presenteOferecido.current = true
+    if (presenteDisponivel(perfil, hoje)) setMostrarPresente(true)
+  }, [avisoAceito, screen, perfil, hoje])
 
   // fecha o painel de atendimento se o cliente ativo sumir (foi embora, etc.)
   useEffect(() => {
@@ -104,16 +166,47 @@ export default function App() {
 
     const won = shiftState.status === 'won'
     sound[won ? 'playWin' : 'playLose']()
+    const resumo = summarize(shiftState)
+    const progressAntes = getProgress()
     const nextProgress = recordShiftCompletion(shiftIndex, {
       won,
       score: shiftState.score,
       reputation: shiftState.reputation,
+      estrelas: calcularEstrelas(resumo),
     })
     setProgress(nextProgress)
 
+    // perfil relido do storage (e não do estado) para a conta fechar sobre o
+    // último valor gravado, mesmo que algo o tenha mudado durante o turno
+    const recompensas = aplicarRecompensasDoTurno(getPerfil(), {
+      resumo,
+      log: shiftState.log,
+      shiftIndex,
+      progressAntes,
+      progressDepois: nextProgress,
+    })
+    setPerfil(savePerfil(recompensas.perfil))
+    setRelatorio(recompensas.relatorio)
+
     const timeout = setTimeout(() => setScreen('resultado'), 900)
     return () => clearTimeout(timeout)
-  }, [shiftState.status, screen, shiftIndex, shiftState.score, shiftState.reputation])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shiftState.status, screen, shiftIndex])
+
+  // as conquistas do turno estouram depois que a tela de resultado já abriu,
+  // junto com a animação das estrelas
+  const relatorioAnunciado = useRef(null)
+  useEffect(() => {
+    if (screen !== 'resultado' || !relatorio || relatorioAnunciado.current === relatorio) return undefined
+    relatorioAnunciado.current = relatorio
+    // o "plim" de cada estrela acompanha o delay da animação em <Estrelas animar>
+    const timeouts = Array.from({ length: relatorio.estrelas }, (_, i) =>
+      setTimeout(() => sound.playStar(i), 350 + i * 280),
+    )
+    timeouts.push(setTimeout(() => mostrarConquistas(relatorio.conquistas), 1300))
+    return () => timeouts.forEach(clearTimeout)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screen, relatorio])
 
   // toast de feedback some sozinho
   useEffect(() => {
@@ -129,6 +222,79 @@ export default function App() {
     return () => clearTimeout(timeout)
   }, [custoPergunta])
 
+  // os toasts somem sozinhos; cada um carrega a própria chave
+  function mostrarConquistas(conquistas, extras = []) {
+    const novos = [
+      ...extras,
+      ...conquistas.map((c) => ({
+        key: `conquista-${c.id}`,
+        icone: c.icone,
+        eyebrow: 'Conquista desbloqueada',
+        titulo: c.nome,
+        moedas: c.moedas,
+      })),
+    ]
+    if (novos.length === 0) return
+    if (conquistas.length > 0) sound.playAchievement()
+    setToasts((prev) => [...prev, ...novos])
+    const chaves = new Set(novos.map((t) => t.key))
+    setTimeout(() => setToasts((prev) => prev.filter((t) => !chaves.has(t.key))), TOAST_DURACAO_MS)
+  }
+
+  function reagirMascote(tipo) {
+    setReacaoMascote({ tipo, key: `${tipo}-${Date.now()}` })
+  }
+
+  function atualizarPerfil(novo) {
+    setPerfil(savePerfil(novo))
+  }
+
+  function handleResgatarPresente() {
+    const { perfil: novo, moedas, novas } = resgatarPresenteDiario(perfil, hoje, progress)
+    if (moedas === 0) return
+    atualizarPerfil(novo)
+    sound.playChest()
+    setMostrarPresente(false)
+    mostrarConquistas(novas, [
+      {
+        key: `presente-${hoje}`,
+        icone: '🎁',
+        eyebrow: 'Presente diário',
+        titulo: `Dia ${novo.diario.sequencia} resgatado`,
+        moedas,
+      },
+    ])
+  }
+
+  function handleAbrirBau(bau) {
+    const { perfil: novo, novas } = abrirBau(perfil, progress, bau)
+    if (novo === perfil) return
+    atualizarPerfil(novo)
+    sound.playChest()
+    mostrarConquistas(novas, [
+      {
+        key: `bau-${bau.estrelas}`,
+        icone: '🎁',
+        eyebrow: `Baú de ${bau.estrelas} estrelas`,
+        titulo: bau.desbloqueia ? 'Tema Dourado desbloqueado!' : 'Baú aberto!',
+        moedas: bau.moedas,
+      },
+    ])
+  }
+
+  function handleComprar(itemId) {
+    const { perfil: novo, novas } = comprarItem(perfil, progress, itemId)
+    if (novo === perfil) return
+    atualizarPerfil(novo)
+    sound.playCoin()
+    mostrarConquistas(novas)
+  }
+
+  function handleEquipar(itemId) {
+    atualizarPerfil(equiparItem(perfil, itemId))
+    sound.playClick()
+  }
+
   function startShift(index) {
     resultadoRegistrado.current = false
     setShiftIndex(index)
@@ -138,6 +304,8 @@ export default function App() {
     setCustoPergunta(null)
     setPaused(false)
     setConfirmandoSaida(false)
+    setRelatorio(null)
+    setReacaoMascote(null)
     setScreen('jogando')
   }
 
@@ -196,6 +364,13 @@ export default function App() {
     else if (event.type === 'serve_error' || event.type === 'refuse_incorrect') sound.playError()
     if (event.type === 'refuse_correct') sound.playRefuseCorrect()
 
+    if (event.moedasGanhas > 0) setTimeout(() => sound.playCoin(), 180)
+    if (event.combo >= 2) setTimeout(() => sound.playCombo(event.combo), 320)
+    if (event.comboQuebrado) sound.playComboBroken()
+    if (event.type === 'serve_error' || event.type === 'refuse_incorrect') reagirMascote('triste')
+    else if (event.combo >= 5 && event.combo % 5 === 0) reagirMascote('festa')
+    else if (event.moedasGanhas > 0) reagirMascote('feliz')
+
     if (event.type === 'serve_item_success') {
       setAtendimentoAtivo((prev) => (prev ? { ...prev, step: 'prateleira', selectedItem: null } : prev))
     } else {
@@ -237,6 +412,10 @@ export default function App() {
             reputation={shiftState.reputation}
             reputationTarget={shiftState.reputationTarget}
             score={shiftState.score}
+            combo={shiftState.combo}
+            moedas={shiftState.moedas}
+            perfil={perfil}
+            reacaoMascote={reacaoMascote}
             onAjuda={() => setMostrarAjuda(true)}
             onPausar={() => setPaused((p) => !p)}
             onSair={() => setConfirmandoSaida(true)}
@@ -322,8 +501,46 @@ export default function App() {
             }}
           />
         )}
-        {avisoAceito && screen === 'inicio' && !mostrarAjuda && (
-          <TelaInicio key="inicio" onJogar={() => setScreen('selecao')} onComoJogar={() => setMostrarAjuda(true)} />
+        {avisoAceito && screen === 'inicio' && !mostrarAjuda && !mostrarPresente && (
+          <TelaInicio
+            key="inicio"
+            perfil={perfil}
+            progress={progress}
+            presenteHoje={presenteDisponivel(perfil, hoje)}
+            bausDisponiveis={BAUS_ESTRELAS.filter((b) => bauDisponivel(perfil, progress, b)).length}
+            onJogar={() => setScreen('selecao')}
+            onComoJogar={() => setMostrarAjuda(true)}
+            onConquistas={() => setScreen('conquistas')}
+            onLoja={() => setScreen('loja')}
+            onPresente={() => setMostrarPresente(true)}
+          />
+        )}
+        {avisoAceito && screen === 'inicio' && !mostrarAjuda && mostrarPresente && (
+          <PresenteDiario
+            key="presente"
+            perfil={perfil}
+            hoje={hoje}
+            onResgatar={handleResgatarPresente}
+            onFechar={() => setMostrarPresente(false)}
+          />
+        )}
+        {avisoAceito && screen === 'conquistas' && (
+          <TelaConquistas
+            key="conquistas"
+            perfil={perfil}
+            progress={progress}
+            onAbrirBau={handleAbrirBau}
+            onVoltar={() => setScreen('inicio')}
+          />
+        )}
+        {avisoAceito && screen === 'loja' && (
+          <TelaLoja
+            key="loja"
+            perfil={perfil}
+            onComprar={handleComprar}
+            onEquipar={handleEquipar}
+            onVoltar={() => setScreen('inicio')}
+          />
         )}
         {avisoAceito && screen === 'selecao' && !mostrarAjuda && (
           <SelecaoTurno
@@ -339,6 +556,7 @@ export default function App() {
             key="resultado"
             shift={shift}
             shiftState={shiftState}
+            relatorio={relatorio}
             temProximo={shiftIndex < SHIFTS.length - 1}
             onTentarNovamente={() => startShift(shiftIndex)}
             onProximo={() => startShift(shiftIndex + 1)}
@@ -347,6 +565,8 @@ export default function App() {
         )}
         {mostrarAjuda && <TelaAjuda key="ajuda" onFechar={() => setMostrarAjuda(false)} />}
       </AnimatePresence>
+
+      <ToastsConquista toasts={toasts} />
     </div>
   )
 }

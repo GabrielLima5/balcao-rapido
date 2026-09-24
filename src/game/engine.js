@@ -33,6 +33,31 @@ const ANAMNESE_BONUS_SCORE = 35
 
 const DEFAULT_DISTRACTION_DURATION_MS = 12000
 
+// --- gamificação dentro do turno -------------------------------------------
+//
+// Combo e gorjetas mexem SÓ em pontos e moedas, nunca em reputação: a
+// vencibilidade de cada turno (que o validador garante) continua dependendo
+// apenas de atender certo. Combo é a sequência de decisões certas seguidas;
+// um erro, uma recusa indevida ou um cliente indo embora zera a sequência.
+const COMBO_STEP_SCORE = 10
+const COMBO_MAX_STEPS = 5
+// Gorjeta em moedas: atender rápido rende mais, e decidir com a anamnese
+// completa rende uma moeda extra — a mesma mensagem do bônus de pontos.
+const TIP_BASE_COINS = 2
+const TIP_PATIENCE_COINS = 3
+const TIP_ANAMNESE_COINS = 1
+const TIP_ITEM_COINS = 1
+const COMBO_MILESTONE = 5
+const COMBO_MILESTONE_COINS = 5
+
+function comboBonusScore(combo) {
+  return COMBO_STEP_SCORE * Math.min(Math.max(combo - 1, 0), COMBO_MAX_STEPS)
+}
+
+function comboMilestoneCoins(combo) {
+  return combo > 0 && combo % COMBO_MILESTONE === 0 ? COMBO_MILESTONE_COINS : 0
+}
+
 // Assim que uma vaga abre na fila (cliente atendido ou foi embora), o próximo
 // pedido pendente é "puxado" para chegar logo em seguida — no máximo esse
 // intervalo depois — em vez de esperar o horário original do roteiro, que
@@ -157,6 +182,9 @@ export function createShiftState(shift) {
     fillerPool: buildFillerPool(shift),
     fillerPatienceMs: averagePatienceMs(shift.arrivals),
     fillerSpawnCount: 0,
+    combo: 0,
+    maxCombo: 0,
+    moedas: 0,
   }
   state = spawnDueArrivals(state).state
   state = spawnDueDistractions(state)
@@ -299,6 +327,10 @@ export function tick(state, deltaMs) {
       next.log.push({ type: 'customer_left_impatient', customerId: customer.id, atMs: clockMs })
       events.push({ type: 'customer_left_impatient', customerId: customer.id })
       if (next.activeCustomerId === customer.id) next.activeCustomerId = null
+      if (next.combo > 0) {
+        next.combo = 0
+        events.push({ type: 'combo_broken' })
+      }
     } else {
       remainingQueue.push({ ...customer, patienceMs })
     }
@@ -478,11 +510,16 @@ export function attemptServe(state, shift, customerId, itemId, decision, options
   if (isReceita && decision === 'entregar' && violations.length === 0 && customer.itensPendentes.length > 1) {
     const itensPendentes = customer.itensPendentes.filter((p) => p !== product.principioAtivo)
     const queue = state.queue.map((c) => (c.id === customerId ? { ...c, itensPendentes } : c))
+    const combo = (state.combo ?? 0) + 1
+    const moedasGanhas = TIP_ITEM_COINS + comboMilestoneCoins(combo)
     const next = {
       ...state,
       queue,
       reputation: clampReputation(state.reputation + ITEM_SUCCESS_REPUTATION),
-      score: state.score + ITEM_SUCCESS_SCORE,
+      score: state.score + ITEM_SUCCESS_SCORE + comboBonusScore(combo),
+      combo,
+      maxCombo: Math.max(state.maxCombo ?? 0, combo),
+      moedas: (state.moedas ?? 0) + moedasGanhas,
       log: [
         ...state.log,
         { type: 'serve_item_success', customerId, produtoId: shelfItem.produtoId, atMs: state.clockMs },
@@ -490,7 +527,7 @@ export function attemptServe(state, shift, customerId, itemId, decision, options
     }
     return {
       state: next,
-      event: { type: 'serve_item_success', customerId, product, itensPendentes, patienceRatio },
+      event: { type: 'serve_item_success', customerId, product, itensPendentes, patienceRatio, combo, moedasGanhas },
     }
   }
 
@@ -532,6 +569,16 @@ export function attemptServe(state, shift, customerId, itemId, decision, options
   const decisaoCerta = type === 'serve_success' || type === 'refuse_correct'
   if (decisaoCerta && anamneseOk) scoreDelta += ANAMNESE_BONUS_SCORE
 
+  const combo = decisaoCerta ? (state.combo ?? 0) + 1 : 0
+  let moedasGanhas = 0
+  if (decisaoCerta) {
+    scoreDelta += comboBonusScore(combo)
+    moedasGanhas =
+      (type === 'serve_success' ? TIP_BASE_COINS + Math.round(TIP_PATIENCE_COINS * patienceRatio) : TIP_BASE_COINS) +
+      (anamneseOk ? TIP_ANAMNESE_COINS : 0) +
+      comboMilestoneCoins(combo)
+  }
+
   const queue = state.queue.filter((c) => c.id !== customerId)
   const activeCustomerId = state.activeCustomerId === customerId ? null : state.activeCustomerId
   const logEntry = {
@@ -543,6 +590,7 @@ export function attemptServe(state, shift, customerId, itemId, decision, options
     violations: eventViolations,
     anamneseOk,
     faltouPerguntar,
+    patienceRatio,
     atMs: state.clockMs,
   }
 
@@ -552,6 +600,9 @@ export function attemptServe(state, shift, customerId, itemId, decision, options
     activeCustomerId,
     reputation: clampReputation(state.reputation + reputationDelta),
     score: state.score + scoreDelta,
+    combo,
+    maxCombo: Math.max(state.maxCombo ?? 0, combo),
+    moedas: (state.moedas ?? 0) + moedasGanhas,
     served: state.served + 1,
     log: [...state.log, logEntry],
   }
@@ -569,6 +620,9 @@ export function attemptServe(state, shift, customerId, itemId, decision, options
       patienceRatio,
       anamneseOk,
       faltouPerguntar,
+      combo,
+      comboQuebrado: !decisaoCerta && (state.combo ?? 0) > 0,
+      moedasGanhas,
     },
   }
 }
@@ -644,5 +698,7 @@ export function summarize(state) {
     decisoesCertas: decisoesCertas.length,
     // acertos "no escuro": certos, mas decididos sem ter feito as perguntas
     acertosNoEscuro: decisoesCertas.filter((e) => !e.anamneseOk).length,
+    maxCombo: state.maxCombo ?? 0,
+    moedas: state.moedas ?? 0,
   }
 }

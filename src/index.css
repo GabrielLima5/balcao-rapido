@@ -31,7 +31,74 @@
 
   --font-main: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
 
+  --color-coin: #f5c542;
+  --color-coin-strong: #d9a21b;
+  --color-star: #ffd24a;
+
   color-scheme: dark;
+}
+
+/* Temas da loja (rewards.js#ITENS_LOJA). Só trocam a paleta — o layout e os
+   estados semânticos (sucesso, alerta, perigo, paciência) ficam iguais para
+   não mudar o significado das cores durante o turno. */
+:root[data-theme='tema-oceano'] {
+  --color-bg: #0c1520;
+  --color-bg-alt: #112134;
+  --color-panel: #162a40;
+  --color-panel-alt: #1c334c;
+  --color-border: #2a4665;
+  --color-muted: #9fb4ca;
+  --color-accent: #3ba7f5;
+  --color-accent-strong: #2388d4;
+  --color-accent-soft: rgba(59, 167, 245, 0.16);
+}
+
+:root[data-theme='tema-lavanda'] {
+  --color-bg: #15111f;
+  --color-bg-alt: #1d1730;
+  --color-panel: #241d3a;
+  --color-panel-alt: #2c2446;
+  --color-border: #41365f;
+  --color-muted: #b3a9cc;
+  --color-accent: #a78bfa;
+  --color-accent-strong: #8b6cf0;
+  --color-accent-soft: rgba(167, 139, 250, 0.16);
+}
+
+:root[data-theme='tema-ambar'] {
+  --color-bg: #1a130b;
+  --color-bg-alt: #251b0f;
+  --color-panel: #2d2114;
+  --color-panel-alt: #362818;
+  --color-border: #503b22;
+  --color-muted: #c9b595;
+  --color-accent: #f59e0b;
+  --color-accent-strong: #d98706;
+  --color-accent-soft: rgba(245, 158, 11, 0.16);
+}
+
+:root[data-theme='tema-cereja'] {
+  --color-bg: #1c0e12;
+  --color-bg-alt: #28131a;
+  --color-panel: #321820;
+  --color-panel-alt: #3c1d27;
+  --color-border: #5a2b3a;
+  --color-muted: #cfa7b2;
+  --color-accent: #fb7185;
+  --color-accent-strong: #e84a63;
+  --color-accent-soft: rgba(251, 113, 133, 0.16);
+}
+
+:root[data-theme='tema-dourado'] {
+  --color-bg: #13110a;
+  --color-bg-alt: #1e1a0e;
+  --color-panel: #262013;
+  --color-panel-alt: #2f2817;
+  --color-border: #574a25;
+  --color-muted: #cabd92;
+  --color-accent: #e8c15a;
+  --color-accent-strong: #caa136;
+  --color-accent-soft: rgba(232, 193, 90, 0.18);
 }
 
 * {

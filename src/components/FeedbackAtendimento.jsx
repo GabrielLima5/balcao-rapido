@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { Moedas } from './Recompensas.jsx'
 import './FeedbackAtendimento.css'
 
 const POSITIVE_TYPES = new Set(['serve_success', 'serve_item_success', 'refuse_correct'])
@@ -34,6 +35,21 @@ export default function FeedbackAtendimento({ feedback }) {
               {TITLES[feedback.type] ?? 'Atendimento'}
               {feedback.variante === 'alerta' && ' — no escuro'}
             </strong>
+            {(feedback.moedas > 0 || feedback.combo >= 2 || feedback.comboQuebrado) && (
+              <span className="feedback-atendimento__recompensas">
+                {feedback.moedas > 0 && (
+                  <span className="feedback-atendimento__chip">
+                    +<Moedas valor={feedback.moedas} tamanho="pequeno" />
+                  </span>
+                )}
+                {feedback.combo >= 2 && (
+                  <span className="feedback-atendimento__chip feedback-atendimento__chip--combo">🔥 Combo x{feedback.combo}</span>
+                )}
+                {feedback.comboQuebrado && (
+                  <span className="feedback-atendimento__chip feedback-atendimento__chip--quebrado">Combo perdido</span>
+                )}
+              </span>
+            )}
             {feedback.messages?.length > 0 && (
               <ul>
                 {feedback.messages.map((msg, i) => (

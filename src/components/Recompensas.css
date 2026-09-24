@@ -1,0 +1,632 @@
+/* --- moedas e estrelas --- */
+
+.moedas {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: var(--color-coin);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.moedas__icone {
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff3b0 0 18%, var(--color-coin) 40%, var(--color-coin-strong) 100%);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.18);
+  flex-shrink: 0;
+}
+
+.moedas--pequeno {
+  font-size: 0.78rem;
+  gap: 4px;
+}
+
+.moedas--grande {
+  font-size: 1.3rem;
+}
+
+.estrelas {
+  display: inline-flex;
+  gap: 2px;
+  line-height: 1;
+}
+
+.estrelas__item {
+  display: inline-block;
+  color: var(--color-border);
+}
+
+.estrelas__item--cheia {
+  color: var(--color-star);
+  text-shadow: 0 0 10px rgba(255, 210, 74, 0.45);
+}
+
+.estrelas--pequeno {
+  font-size: 0.85rem;
+}
+
+.estrelas--grande {
+  font-size: 2.6rem;
+  gap: 8px;
+}
+
+/* --- nível / perfil --- */
+
+.barra-nivel {
+  flex: 1;
+  min-width: 200px;
+}
+
+.barra-nivel__topo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+}
+
+.barra-nivel__selo {
+  background: var(--color-accent-strong);
+  color: #04231a;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 0.72rem;
+}
+
+.barra-nivel__titulo {
+  font-weight: 700;
+}
+
+.barra-nivel__xp {
+  margin-left: auto;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.barra-nivel__trilho {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.barra-nivel__preenchimento {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-accent-strong), var(--color-accent));
+}
+
+.perfil-resumo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  background: var(--color-panel-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.perfil-resumo__mascote {
+  font-size: 1.9rem;
+}
+
+.perfil-resumo__numeros {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.perfil-resumo__chip {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.perfil-resumo__estrela {
+  color: var(--color-star);
+}
+
+/* --- menu principal gamificado --- */
+
+.menu-recompensas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.menu-recompensas__botao {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-panel-alt);
+  color: var(--color-text);
+  font-size: 0.8rem;
+}
+
+.menu-recompensas__botao:hover {
+  border-color: var(--color-accent);
+}
+
+.menu-recompensas__icone {
+  font-size: 1.5rem;
+}
+
+.menu-recompensas__badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--color-danger);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  border-radius: 999px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 3px var(--color-panel);
+}
+
+/* --- mascote no HUD --- */
+
+.mascote {
+  display: inline-block;
+  font-size: 1.8rem;
+  line-height: 1;
+  user-select: none;
+}
+
+/* --- toasts --- */
+
+.toasts-conquista {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  width: min(320px, calc(100vw - 32px));
+}
+
+.toast-conquista {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--color-panel);
+  border: 1px solid var(--color-coin);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  box-shadow: var(--shadow-panel), 0 0 18px rgba(245, 197, 66, 0.2);
+}
+
+.toast-conquista__icone {
+  font-size: 1.7rem;
+}
+
+.toast-conquista__texto {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  font-size: 0.85rem;
+}
+
+.toast-conquista__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.62rem;
+  color: var(--color-coin);
+}
+
+/* --- relatório de fim de turno --- */
+
+.relatorio {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.relatorio__estrelas {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.relatorio__criterios {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.76rem;
+  color: var(--color-muted);
+}
+
+.relatorio__criterio--ok {
+  color: var(--color-text);
+}
+
+.relatorio__dica {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+
+.relatorio__colunas {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 10px;
+}
+
+.relatorio__moedas,
+.relatorio__xp {
+  background: var(--color-panel-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.relatorio h3 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  margin: 0 0 8px;
+}
+
+.relatorio__moedas ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.8rem;
+}
+
+.relatorio__moedas li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.relatorio__total {
+  border-top: 1px solid var(--color-border);
+  padding-top: 6px;
+  margin-top: 2px;
+  font-weight: 700;
+}
+
+.relatorio__vazio {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.relatorio__xp-ganho {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-accent);
+}
+
+.relatorio__nivel-novo {
+  margin-top: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-star);
+}
+
+.relatorio__conquistas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.relatorio__conquista {
+  display: inline-block;
+  background: rgba(245, 197, 66, 0.12);
+  border: 1px solid var(--color-coin);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* --- telas de conquistas e loja --- */
+
+.overlay__card--largo {
+  width: min(760px, 100%);
+}
+
+.recompensas__cabecalho-extra {
+  margin-left: auto;
+}
+
+.recompensas__subtitulo {
+  font-size: 0.85rem;
+  color: var(--color-accent);
+  margin: 6px 0 10px;
+}
+
+.baus {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.bau {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-panel-alt);
+  color: var(--color-text);
+  font-size: 0.75rem;
+}
+
+.bau:disabled {
+  cursor: default;
+}
+
+.bau--aberto {
+  opacity: 0.5;
+}
+
+.bau--disponivel {
+  border-color: var(--color-coin);
+  box-shadow: 0 0 16px rgba(245, 197, 66, 0.3);
+}
+
+.bau__icone {
+  font-size: 1.6rem;
+}
+
+.bau__meta {
+  font-weight: 700;
+  color: var(--color-star);
+}
+
+.bau__extra {
+  font-size: 0.62rem;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.bau__abrir {
+  font-weight: 800;
+  color: var(--color-coin);
+  text-transform: uppercase;
+  font-size: 0.66rem;
+}
+
+.conquistas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 8px;
+}
+
+.conquista {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-panel-alt);
+}
+
+.conquista:not(.conquista--ganha) .conquista__icone {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+
+.conquista--ganha {
+  border-color: rgba(245, 197, 66, 0.55);
+  background: linear-gradient(135deg, rgba(245, 197, 66, 0.1), var(--color-panel-alt) 60%);
+}
+
+.conquista__icone {
+  font-size: 1.6rem;
+}
+
+.conquista__texto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.78rem;
+}
+
+.conquista__texto > span {
+  color: var(--color-muted);
+}
+
+.conquista__premio {
+  color: var(--color-success);
+  font-weight: 800;
+}
+
+.conquista__progresso {
+  position: relative;
+  margin-top: 4px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+  overflow: hidden;
+}
+
+.conquista__progresso-barra {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--color-accent-soft);
+  border-right: 2px solid var(--color-accent);
+}
+
+.conquista__progresso-texto {
+  position: relative;
+  font-size: 0.62rem;
+  padding-left: 8px;
+  line-height: 14px;
+  color: var(--color-text);
+}
+
+.loja {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.item-loja {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 5px;
+  padding: 12px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-panel-alt);
+}
+
+.item-loja--equipado {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent) inset;
+}
+
+.item-loja__visual {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  background: var(--color-bg-alt);
+  border: 2px solid var(--color-border);
+}
+
+.item-loja__nome {
+  font-size: 0.85rem;
+}
+
+.item-loja__descricao {
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  flex: 1;
+}
+
+.item-loja__botao {
+  border: 1px solid var(--color-border);
+  background: var(--color-panel);
+  color: var(--color-text);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+}
+
+.item-loja__botao:hover:not(:disabled) {
+  border-color: var(--color-accent);
+}
+
+.item-loja__botao--comprar:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.item-loja__status {
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  font-weight: 700;
+  padding: 6px 0;
+}
+
+/* --- presente diário --- */
+
+.overlay__card--presente {
+  width: min(620px, 100%);
+}
+
+.presente__dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.presente__dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 2px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-panel-alt);
+}
+
+.presente__dia-label {
+  font-size: 0.64rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+}
+
+.presente__dia-icone {
+  font-size: 1.3rem;
+}
+
+.presente__dia--resgatado {
+  opacity: 0.55;
+}
+
+.presente__dia--resgatado .presente__dia-icone {
+  color: var(--color-success);
+}
+
+.presente__dia--hoje {
+  border-color: var(--color-coin);
+  box-shadow: 0 0 16px rgba(245, 197, 66, 0.35);
+  animation: presente-pulsa 1.4s ease-in-out infinite;
+}
+
+.presente__dia--grande .presente__dia-icone {
+  font-size: 1.6rem;
+}
+
+@keyframes presente-pulsa {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@media (max-width: 620px) {
+  .baus {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .presente__dias {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .relatorio__colunas {
+    grid-template-columns: 1fr;
+  }
+  .conquistas {
+    grid-template-columns: 1fr;
+  }
+}

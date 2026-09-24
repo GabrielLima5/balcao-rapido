@@ -155,6 +155,26 @@ Nesses casos nenhum item da prateleira é entregável e recusar a venda *é* o b
 atendimento. O sinal de alerta nunca está na fala inicial do cliente: só sai se o
 jogador caracterizar o quadro.
 
+## Gamificação
+
+Toda recompensa segue o **bom atendimento**, nunca o atalho: a 3ª estrela exige
+anamnese completa, e nada que se compra muda regra ou dificuldade.
+
+| Peça | Onde | Como funciona |
+|---|---|---|
+| **Combo** | `engine.js` | decisões certas seguidas; erro, recusa indevida ou cliente indo embora zera. Rende pontos (+10 por nível, até +50) — **nunca reputação**, para não mexer na vencibilidade que o validador garante |
+| **Gorjetas** | `engine.js` | moedas por decisão certa: base + rapidez (paciência restante) + 1 se a anamnese estava completa; +5 a cada 5 de combo |
+| **Estrelas** | `rewards.js` | ★ concluir · ★★ sem erro nem recusa indevida · ★★★ sem acerto no escuro e sem ninguém ir embora. O validador exige que o jogador ideal leve as 3 |
+| **XP e níveis** | `rewards.js` | XP = pontos do turno (+100 se venceu). 8 níveis, de Estagiário a Mestre do Balcão; cada nível rende moedas |
+| **Conquistas** | `rewards.js#CONQUISTAS` | 20 conquistas com prêmio em moedas (Sentinela, Detetive Clínico, Saber Dizer Não…) |
+| **Presente diário** | `rewards.js` | ciclo de 7 dias com prêmios crescentes; pular um dia recomeça a sequência |
+| **Baús de estrelas** | `rewards.js#BAUS_ESTRELAS` | marcos de 5 a 45 estrelas; o último libera o tema Dourado |
+| **Loja** | `rewards.js#ITENS_LOJA` | só cosméticos: temas (variáveis de cor em `index.css`) e mascotes que reagem no HUD |
+
+`rewards.js` é puro como a engine — recebe o perfil e a data (`'AAAA-MM-DD'`)
+e devolve um perfil novo. O perfil vive em `storage.js` numa chave própria
+(`balcao-rapido:perfil`), separada do progresso e do aceite do aviso.
+
 ## Arquitetura
 
 Mesma filosofia do projeto irmão `numero-proibido`: engine puro e testável,

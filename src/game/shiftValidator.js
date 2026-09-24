@@ -25,6 +25,7 @@ import {
   getActiveCustomer,
   summarize,
 } from './engine.js'
+import { calcularEstrelas } from './rewards.js'
 
 const STEP_MS = 500
 const SERVICE_BASE_MS = 5000
@@ -297,6 +298,12 @@ export function validateShift(shift) {
         `${summary.acertosNoEscuro} decisão(ões) certa(s) sem anamnese completa mesmo com o jogador ideal ` +
           `perguntando tudo que era crítico — inconsistência em camposCriticos`,
       )
+    }
+    // A 3ª estrela (rewards.js#calcularEstrelas) tem que estar ao alcance de
+    // quem atende direito — senão ela vira um troféu impossível e desmotiva.
+    const estrelas = calcularEstrelas(summary)
+    if (estrelas < 3) {
+      problems.push(`o jogador ideal só leva ${estrelas} estrela(s) — a 3ª estrela precisa ser alcançável`)
     }
   }
 

@@ -1,3 +1,5 @@
+import { AnimatePresence, motion } from 'framer-motion'
+import { Mascote, Moedas } from './Recompensas.jsx'
 import './HUD.css'
 
 const REPUTATION_MAX = 100
@@ -14,6 +16,10 @@ export default function HUD({
   reputation,
   reputationTarget,
   score,
+  combo = 0,
+  moedas = 0,
+  perfil,
+  reacaoMascote,
   onAjuda,
   onPausar,
   onSair,
@@ -61,6 +67,34 @@ export default function HUD({
         <span className="hud__score-label">Pontos</span>
         <span className="hud__score-valor">{score}</span>
       </div>
+
+      {/* combo só aparece a partir de 2 — um acerto sozinho ainda não é sequência */}
+      <div className="hud__combo-slot">
+        <AnimatePresence>
+          {combo >= 2 && (
+            <motion.div
+              key={combo}
+              className={`hud__combo ${combo >= 5 ? 'hud__combo--quente' : ''}`}
+              initial={{ scale: 1.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.4, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 18 }}
+            >
+              <span className="hud__combo-fogo">🔥</span>
+              <span className="hud__combo-valor">x{combo}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <div className="hud__moedas" title="Gorjetas deste turno">
+        <span className="hud__score-label">Gorjetas</span>
+        <motion.span key={moedas} initial={{ scale: 1.35 }} animate={{ scale: 1 }}>
+          <Moedas valor={moedas} />
+        </motion.span>
+      </div>
+
+      {perfil && <Mascote perfil={perfil} reacao={reacaoMascote} />}
 
       <div className="hud__acoes">
         <button type="button" className="hud__botao" onClick={onAjuda}>

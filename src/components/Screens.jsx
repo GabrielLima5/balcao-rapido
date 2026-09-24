@@ -2,6 +2,8 @@ import { motion } from 'framer-motion'
 import { AVISO_MARCAS } from '../game/products.js'
 import { RULE_FACTORIES } from '../game/rules.js'
 import { summarize } from '../game/engine.js'
+import { totalEstrelas } from '../game/rewards.js'
+import { Estrelas, PerfilResumo, RelatorioRecompensas } from './Recompensas.jsx'
 import './Screens.css'
 
 export function Overlay({ children, className = '' }) {
@@ -60,11 +62,38 @@ export function TelaAviso({ onAceitar }) {
   )
 }
 
-export function TelaInicio({ onJogar, onComoJogar }) {
+export function TelaInicio({
+  perfil,
+  progress,
+  presenteHoje,
+  bausDisponiveis,
+  onJogar,
+  onComoJogar,
+  onConquistas,
+  onLoja,
+  onPresente,
+}) {
   return (
     <Overlay className="overlay__card--intro">
       <p className="overlay__eyebrow">Balcão Rápido</p>
       <h1 className="overlay__titulo">Bem-vindo ao seu plantão</h1>
+      <PerfilResumo perfil={perfil} progress={progress} />
+      <div className="menu-recompensas">
+        <button type="button" className="menu-recompensas__botao" onClick={onPresente}>
+          {presenteHoje && <span className="menu-recompensas__badge">!</span>}
+          <span className="menu-recompensas__icone">🎁</span>
+          Presente diário
+        </button>
+        <button type="button" className="menu-recompensas__botao" onClick={onConquistas}>
+          {bausDisponiveis > 0 && <span className="menu-recompensas__badge">{bausDisponiveis}</span>}
+          <span className="menu-recompensas__icone">🏆</span>
+          Conquistas
+        </button>
+        <button type="button" className="menu-recompensas__botao" onClick={onLoja}>
+          <span className="menu-recompensas__icone">🛍️</span>
+          Loja
+        </button>
+      </div>
       <p className="overlay__texto">
         Você é o atendente de uma farmácia. Clientes chegam com pedidos — um produto, um
         genérico, um sintoma ou uma receita — e quase nunca contam de cara o que importa:
@@ -93,6 +122,9 @@ export function SelecaoTurno({ shifts, progress, onSelecionar, onVoltar }) {
           ← Início
         </button>
         <h2 className="overlay__titulo">Turnos</h2>
+        <span className="selecao-turno__total">
+          <span className="selecao-turno__total-estrela">★</span> {totalEstrelas(progress)} / {shifts.length * 3}
+        </span>
       </div>
       <div className="selecao-turno__grade">
         {shifts.map((shift, index) => {
@@ -110,6 +142,11 @@ export function SelecaoTurno({ shifts, progress, onSelecionar, onVoltar }) {
               <span className="selecao-turno__nome">{bloqueado ? '???' : shift.nome}</span>
               {!bloqueado && <span className="selecao-turno__dificuldade">{shift.dificuldade}</span>}
               {!bloqueado && <span className="selecao-turno__resumo">{shift.resumo}</span>}
+              {!bloqueado && (
+                <span className="selecao-turno__estrelas">
+                  <Estrelas quantidade={resultado?.estrelas ?? 0} tamanho="pequeno" />
+                </span>
+              )}
               {resultado && (
                 <span className={`selecao-turno__resultado ${resultado.won ? 'selecao-turno__resultado--ok' : ''}`}>
                   {resultado.won ? `Concluído · ${resultado.score} pts` : 'Ainda não concluído'}
@@ -124,7 +161,7 @@ export function SelecaoTurno({ shifts, progress, onSelecionar, onVoltar }) {
   )
 }
 
-export function TelaResultadoTurno({ shift, shiftState, onTentarNovamente, onProximo, onTurnos, temProximo }) {
+export function TelaResultadoTurno({ shift, shiftState, relatorio, onTentarNovamente, onProximo, onTurnos, temProximo }) {
   const resumo = summarize(shiftState)
   const passou = resumo.status === 'won'
 
@@ -136,7 +173,15 @@ export function TelaResultadoTurno({ shift, shiftState, onTentarNovamente, onPro
       </h2>
       <p className="overlay__texto">
         Reputação final: <strong>{resumo.reputation}</strong> (meta: {resumo.reputationTarget})
+        {resumo.maxCombo >= 2 && (
+          <>
+            {' '}
+            · Maior combo: <strong>🔥 {resumo.maxCombo}</strong>
+          </>
+        )}
       </p>
+
+      <RelatorioRecompensas relatorio={relatorio} venceu={passou} />
 
       <div className="resultado-turno__grade">
         <div>

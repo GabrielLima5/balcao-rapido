@@ -14,7 +14,8 @@ for (const r of result.perShift) {
   )
   console.log(
     `       recusas certas=${r.summary.refusedCorrect} indevidas=${r.summary.refusedIncorrect} ` +
-      `anamnese completa=${r.summary.anamneseCompleta}/${r.summary.decisoesCertas}`,
+      `anamnese completa=${r.summary.anamneseCompleta}/${r.summary.decisoesCertas} ` +
+      `combo máx=${r.summary.maxCombo} gorjetas=${r.summary.moedas}`,
   )
   for (const problem of r.problems) {
     console.log(`       - ${problem}`)

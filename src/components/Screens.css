@@ -264,3 +264,27 @@
   border-radius: var(--radius-sm);
   padding: 10px 12px;
 }
+
+/* --- gamificação --- */
+
+.overlay__card--resultado {
+  width: min(660px, 100%);
+}
+
+.selecao-turno__total {
+  margin-left: auto;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.selecao-turno__total-estrela {
+  color: var(--color-star);
+}
+
+.selecao-turno__estrelas {
+  margin-top: auto;
+}
+
+.selecao-turno__estrelas + .selecao-turno__resultado {
+  margin-top: 0;
+}

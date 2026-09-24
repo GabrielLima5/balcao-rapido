@@ -42,3 +42,30 @@
   border-color: var(--color-warning);
   color: var(--color-text);
 }
+
+.feedback-atendimento__recompensas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.feedback-atendimento__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--color-coin);
+}
+
+.feedback-atendimento__chip--combo {
+  color: var(--color-warning);
+}
+
+.feedback-atendimento__chip--quebrado {
+  color: var(--color-muted);
+}
