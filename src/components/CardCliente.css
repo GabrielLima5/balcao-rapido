@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 190px;
+  width: 212px;
   padding: 12px 14px;
   background: var(--color-panel-alt);
   border: 1px solid var(--color-border);
@@ -24,27 +24,61 @@
 .card-cliente__topo {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 9px;
 }
 
-.card-cliente__humor {
-  font-size: 1rem;
+/* nome e "34 anos · com pressa" empilhados ao lado do retrato — o humor saiu do
+   emoji e virou expressão no rosto, então aqui ele só confirma por escrito */
+.card-cliente__identificacao {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
 }
 
 .card-cliente__nome {
   font-weight: 700;
   font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-cliente__humor {
+  font-size: 0.67rem;
+  color: var(--color-muted);
+  white-space: nowrap;
 }
 
 .card-cliente__balao {
-  margin: 0;
+  position: relative;
+  margin: 4px 0 0;
+  padding: 8px 10px;
   font-size: 0.78rem;
-  color: var(--color-muted);
+  color: var(--color-text);
   line-height: 1.35;
   min-height: 2.6em;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+/* bico do balão apontando para o retrato: é o que transforma a frase solta em
+   alguém falando */
+.card-cliente__balao::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 16px;
+  width: 8px;
+  height: 8px;
+  background: var(--color-bg-alt);
+  border-left: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
+  transform: rotate(45deg);
 }
 
 .card-cliente__receita-badge {

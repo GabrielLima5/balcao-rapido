@@ -3,6 +3,8 @@ import { motion } from 'framer-motion'
 import { ALERGIA_LABEL, APRESENTACAO_LABEL, PUBLICO_LABEL, TAGS, labelPrincipio, labelPrincipios } from '../game/products.js'
 import { TAG_LABEL } from '../game/rules.js'
 import { jaPerguntou } from '../game/anamnese.js'
+import Avatar from './Avatar.jsx'
+import Embalagem from './Embalagem.jsx'
 import './ConfirmacaoEntrega.css'
 
 const CATEGORIA_CONTROLADA_LABEL = {
@@ -44,6 +46,20 @@ export default function ConfirmacaoEntrega({ item, customer, onEntregar, onRecus
       <div className="confirmacao__colunas">
         <section className="confirmacao__coluna">
           <h3 className="confirmacao__titulo">Produto selecionado</h3>
+
+          {/* Aqui — e só aqui — a embalagem mostra a validade. É o momento em
+              que o jogador tem a caixa na mão: o carimbo é a etiqueta que ele
+              deveria ter virado para ler antes de entregar. */}
+          <div className="confirmacao__produto">
+            <Embalagem
+              produto={produto}
+              tamanho={132}
+              comTexto
+              vencido={item.validadeStatus === 'vencido'}
+            />
+            <span className="confirmacao__produto-rotulo">{item.rotulo}</span>
+          </div>
+
           <dl className="confirmacao__lista">
             <div>
               <dt>Nome</dt>
@@ -135,7 +151,10 @@ export default function ConfirmacaoEntrega({ item, customer, onEntregar, onRecus
         </section>
 
         <section className="confirmacao__coluna">
-          <h3 className="confirmacao__titulo">No balcão — {customer.nome}</h3>
+          <h3 className="confirmacao__titulo confirmacao__titulo--cliente">
+            <Avatar customer={customer} tamanho={38} />
+            No balcão — {customer.nome}
+          </h3>
           <dl className="confirmacao__lista">
             <div>
               <dt>Pedido</dt>

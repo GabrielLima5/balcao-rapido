@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
+import Avatar from './Avatar.jsx'
 import Anamnese from './Anamnese.jsx'
 import Prateleira from './Prateleira.jsx'
 import ConfirmacaoEntrega from './ConfirmacaoEntrega.jsx'
@@ -25,9 +26,12 @@ export default function PainelAtendimento({
       transition={{ type: 'spring', stiffness: 340, damping: 30 }}
     >
       <div className="painel-atendimento__topo">
-        <div>
+        {/* o cliente em tamanho grande: quem está sendo atendido precisa estar
+            presente na tela, não só citado no título */}
+        <Avatar customer={customer} tamanho={64} className="painel-atendimento__avatar" />
+        <div className="painel-atendimento__cliente">
           <h2 className="painel-atendimento__titulo">Atendendo {customer.nome}</h2>
-          <p className="painel-atendimento__pedido">“{customer.request.mensagem}”</p>
+          <p className="painel-atendimento__pedido">{customer.request.mensagem}</p>
         </div>
         <button type="button" className="painel-atendimento__cancelar" onClick={onCancelar}>
           Cancelar atendimento

@@ -349,7 +349,15 @@ export function startService(state, customerId) {
   if (!customer || customer.state !== 'waiting') {
     return { state, event: { type: 'idle' } }
   }
-  const queue = state.queue.map((c) => (c.id === customerId ? { ...c, state: 'being_served' } : c))
+  // Trocar de cliente no meio do atendimento é jogada legítima (o relógio de
+  // todo mundo continua correndo, então largar um pra salvar outro é uma
+  // decisão). O que não pode é o anterior continuar marcado como
+  // 'being_served': ele volta pra fila visualmente, mas `startService` passa a
+  // recusá-lo para sempre e o jogador não consegue mais reabri-lo.
+  const queue = state.queue.map((c) => {
+    if (c.id === customerId) return { ...c, state: 'being_served' }
+    return c.state === 'being_served' ? { ...c, state: 'waiting' } : c
+  })
   return { state: { ...state, queue, activeCustomerId: customerId }, event: { type: 'service_started', customerId } }
 }
 

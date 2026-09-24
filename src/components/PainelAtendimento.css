@@ -13,19 +13,47 @@
 
 .painel-atendimento__topo {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
   gap: 12px;
+}
+
+.painel-atendimento__avatar {
+  align-self: flex-start;
+}
+
+.painel-atendimento__cliente {
+  flex: 1;
+  min-width: 0;
 }
 
 .painel-atendimento__titulo {
   font-size: 1.05rem;
 }
 
+/* a fala do cliente vira balão apontando para o retrato ao lado */
 .painel-atendimento__pedido {
-  margin: 4px 0 0;
-  color: var(--color-muted);
+  position: relative;
+  display: inline-block;
+  margin: 6px 0 0;
+  padding: 8px 12px;
+  color: var(--color-text);
   font-size: 0.85rem;
+  background: var(--color-panel-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.painel-atendimento__pedido::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 14px;
+  width: 9px;
+  height: 9px;
+  background: var(--color-panel-alt);
+  border-left: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  transform: rotate(45deg);
 }
 
 .painel-atendimento__cancelar {

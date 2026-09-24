@@ -28,22 +28,34 @@
 
 .prateleira__grade {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
   gap: 10px;
   overflow-y: auto;
   padding-right: 4px;
 }
 
+/* a gôndola é o produto + a ficha dele: embalagem à esquerda, dados à direita */
 .prateleira__item {
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
+  gap: 10px;
   padding: 10px 12px;
   background: var(--color-panel-alt);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   text-align: left;
+}
+
+.prateleira__item-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.prateleira__item-embalagem {
+  margin-top: 2px;
 }
 
 .prateleira__item:hover {

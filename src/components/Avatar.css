@@ -1,0 +1,46 @@
+.avatar {
+  display: inline-block;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--color-bg-alt);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 2px 6px rgba(0, 0, 0, 0.3);
+  line-height: 0;
+}
+
+.avatar svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* O humor tem que ser legível a 44px, onde a sobrancelha quase não aparece:
+   o anel colorido carrega a leitura rápida e o rosto confirma de perto. */
+.avatar--apressado {
+  box-shadow: inset 0 0 0 2px var(--color-warning), 0 2px 6px rgba(0, 0, 0, 0.3);
+  animation: avatar-impaciente 1.8s ease-in-out infinite;
+}
+
+.avatar--estressado {
+  box-shadow: inset 0 0 0 2px var(--color-danger), 0 2px 6px rgba(0, 0, 0, 0.3);
+  animation: avatar-nervoso 2.6s ease-in-out infinite;
+}
+
+@keyframes avatar-impaciente {
+  0%, 82%, 100% { transform: translateY(0); }
+  88% { transform: translateY(-2px); }
+  94% { transform: translateY(0); }
+}
+
+@keyframes avatar-nervoso {
+  0%, 88%, 100% { transform: rotate(0deg); }
+  91% { transform: rotate(-3deg); }
+  95% { transform: rotate(3deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar--apressado,
+  .avatar--estressado {
+    animation: none;
+  }
+}

@@ -1,11 +1,12 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { patienceRatio } from '../game/engine.js'
+import Avatar from './Avatar.jsx'
 import './CardCliente.css'
 
-const HUMOR_ICONS = {
-  neutro: '🙂',
-  apressado: '⏱️',
-  estressado: '😤',
+const HUMOR_LABEL = {
+  neutro: 'Tranquilo',
+  apressado: 'Com pressa',
+  estressado: 'Irritado',
 }
 
 export default function CardCliente({ customer, onClick, isActive, custoPergunta }) {
@@ -25,10 +26,14 @@ export default function CardCliente({ customer, onClick, isActive, custoPergunta
       onClick={() => onClick(customer.id)}
     >
       <div className="card-cliente__topo">
-        <span className="card-cliente__humor" aria-hidden="true">
-          {HUMOR_ICONS[customer.humor] ?? '🙂'}
+        <Avatar customer={customer} tamanho={46} />
+
+        <span className="card-cliente__identificacao">
+          <span className="card-cliente__nome">{customer.nome}</span>
+          <span className="card-cliente__humor">
+            {customer.idade} anos · {HUMOR_LABEL[customer.humor] ?? HUMOR_LABEL.neutro}
+          </span>
         </span>
-        <span className="card-cliente__nome">{customer.nome}</span>
 
         {/* o preço da pergunta salta do cartão de quem pagou por ela: sem isso
             a dedução some dentro da barra e a anamnese parece de graça. */}
