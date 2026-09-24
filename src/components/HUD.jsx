@@ -18,7 +18,10 @@ export default function HUD({
   onPausar,
   onSair,
 }) {
-  const ratio = Math.min(1, reputation / Math.max(reputationTarget, 1))
+  // preenchimento e marcador da meta usam a mesma escala (0..REPUTATION_MAX),
+  // senão a barra "cheia" não bate com a posição da marquinha da meta.
+  const ratio = Math.min(1, reputation / REPUTATION_MAX)
+  const metaRatio = Math.min(1, reputationTarget / REPUTATION_MAX)
   const nivel = reputation < reputationTarget * 0.5 ? 'baixa' : reputation < reputationTarget ? 'media' : 'alta'
   const urgente = remainingSeconds <= 20
 
@@ -37,14 +40,20 @@ export default function HUD({
       <div className="hud__reputacao">
         <div className="hud__reputacao-topo">
           <span>Reputação</span>
-          <span>{reputation}</span>
+          <span>
+            {reputation} <span className="hud__reputacao-max">/ {REPUTATION_MAX}</span>
+          </span>
         </div>
         <div className="hud__reputacao-barra">
           <div
             className={`hud__reputacao-preenchimento hud__reputacao-preenchimento--${nivel}`}
             style={{ width: `${ratio * 100}%` }}
           />
-          <div className="hud__reputacao-meta" style={{ left: `${Math.min(100, (reputationTarget / REPUTATION_MAX) * 100)}%` }} />
+          <div
+            className="hud__reputacao-meta"
+            style={{ left: `${metaRatio * 100}%` }}
+            title={`Meta do turno: ${reputationTarget}`}
+          />
         </div>
       </div>
 

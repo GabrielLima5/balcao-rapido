@@ -62,6 +62,10 @@
   margin-bottom: 4px;
 }
 
+.hud__reputacao-max {
+  opacity: 0.55;
+}
+
 .hud__reputacao-barra {
   position: relative;
   height: 10px;
@@ -91,11 +95,12 @@
 
 .hud__reputacao-meta {
   position: absolute;
-  top: -2px;
-  bottom: -2px;
+  top: 0;
+  bottom: 0;
   width: 2px;
+  margin-left: -1px;
   background: var(--color-text);
-  opacity: 0.6;
+  opacity: 0.75;
 }
 
 .hud__score {
