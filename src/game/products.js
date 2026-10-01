@@ -6,8 +6,8 @@
 // reconheça a caixa que ele vai encontrar no balcão — e saiba que ali dentro
 // tem dipirona.
 //
-// ⚠️ AVISO DE MARCAS E DE CONTEÚDO — ver AVISO_MARCAS abaixo, exibido na tela
-// inicial e na tela de ajuda. Resumo: as marcas citadas pertencem a seus
+// ⚠️ AVISO DE MARCAS E DE CONTEÚDO — ver AVISO_MARCAS abaixo, exibido nos termos
+// de uso e na tela de ajuda. Resumo: as marcas citadas pertencem a seus
 // titulares, este jogo não tem vínculo com elas, e as REGRAS de
 // contraindicação, interação, alergia e controle usadas aqui são
 // SIMPLIFICADAS para fins de jogo. Não são bula e não servem de referência

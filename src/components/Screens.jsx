@@ -28,16 +28,19 @@ export function Overlay({ children, className = '' }) {
   )
 }
 
-// Porta de entrada: o aviso não é um parágrafo que se pula, é um passo. Só se
-// sai dele confirmando, e o aceite fica gravado (ver storage.js) para não virar
-// atrito a cada partida. É a diferença entre "estava escrito lá" e "a pessoa
-// leu antes de aprender qualquer coisa errada".
-export function TelaAviso({ onAceitar }) {
+// Termos de uso: não bloqueiam a entrada no jogo — a tela inicial avisa que
+// jogar implica concordar com eles, e o texto completo fica a um clique.
+export function TelaTermos({ onFechar }) {
   return (
     <Overlay className="overlay__card--intro">
-      <p className="overlay__eyebrow">Antes de começar</p>
-      <h1 className="overlay__titulo">Isto é um jogo, não uma bula</h1>
+      <div className="overlay__topo-com-voltar">
+        <button type="button" className="overlay__link" onClick={onFechar}>
+          ← Voltar
+        </button>
+        <h2 className="overlay__titulo">Termos de uso</h2>
+      </div>
 
+      <h3 className="ajuda__subtitulo">Isto é um jogo, não uma bula</h3>
       <p className="overlay__texto">
         O <strong>catálogo</strong> deste jogo é real: os medicamentos, os princípios ativos, as
         apresentações e as concentrações existem e foram conferidos. As <strong>regras</strong> de
@@ -54,8 +57,8 @@ export function TelaAviso({ onAceitar }) {
       <p className="overlay__aviso">{AVISO_MARCAS}</p>
 
       <div className="overlay__acoes">
-        <button type="button" className="overlay__botao overlay__botao--primario" onClick={onAceitar}>
-          Li e entendi
+        <button type="button" className="overlay__botao overlay__botao--primario" onClick={onFechar}>
+          Fechar
         </button>
       </div>
     </Overlay>
@@ -66,24 +69,39 @@ export function TelaInicio({
   perfil,
   progress,
   presenteHoje,
+  mostrarPresente,
   bausDisponiveis,
   onJogar,
   onComoJogar,
   onConquistas,
   onLoja,
   onPresente,
+  onTermos,
 }) {
   return (
     <Overlay className="overlay__card--intro">
-      <p className="overlay__eyebrow">Balcão Rápido</p>
+      <div className="overlay__cabecalho">
+        <p className="overlay__eyebrow">Balcão Rápido</p>
+        <button
+          type="button"
+          className="overlay__ajuda"
+          onClick={onComoJogar}
+          aria-label="Como jogar"
+          title="Como jogar"
+        >
+          ?
+        </button>
+      </div>
       <h1 className="overlay__titulo">Bem-vindo ao seu plantão</h1>
       <PerfilResumo perfil={perfil} progress={progress} />
       <div className="menu-recompensas">
-        <button type="button" className="menu-recompensas__botao" onClick={onPresente}>
-          {presenteHoje && <span className="menu-recompensas__badge">!</span>}
-          <span className="menu-recompensas__icone">🎁</span>
-          Presente diário
-        </button>
+        {mostrarPresente && (
+          <button type="button" className="menu-recompensas__botao" onClick={onPresente}>
+            {presenteHoje && <span className="menu-recompensas__badge">!</span>}
+            <span className="menu-recompensas__icone">🎁</span>
+            Presente diário
+          </button>
+        )}
         <button type="button" className="menu-recompensas__botao" onClick={onConquistas}>
           {bausDisponiveis > 0 && <span className="menu-recompensas__badge">{bausDisponiveis}</span>}
           <span className="menu-recompensas__icone">🏆</span>
@@ -101,15 +119,24 @@ export function TelaInicio({
         <strong>perguntar</strong>, achar o item certo na prateleira e decidir entregar ou
         recusar. Tudo com o relógio correndo e mais gente entrando na fila.
       </p>
-      <p className="overlay__aviso">{AVISO_MARCAS}</p>
-      <div className="overlay__acoes">
-        <button type="button" className="overlay__botao overlay__botao--secundario" onClick={onComoJogar}>
-          Como jogar
-        </button>
+      <div className="overlay__acoes overlay__acoes--cheio">
         <button type="button" className="overlay__botao overlay__botao--primario" onClick={onJogar}>
-          Ver turnos
+          Jogar
         </button>
       </div>
+      <p className="overlay__termos">
+        Ao jogar, você concorda com os{' '}
+        <button type="button" className="overlay__termos-link" onClick={onTermos}>
+          termos de uso
+        </button>
+        .
+      </p>
+      <footer className="overlay__rodape">
+        Desenvolvido por{' '}
+        <a href="https://gabrielme.netlify.app/" target="_blank" rel="noopener noreferrer">
+          Gabriel Lima
+        </a>
+      </footer>
     </Overlay>
   )
 }

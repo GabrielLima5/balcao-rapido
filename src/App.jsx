@@ -14,8 +14,6 @@ import {
 import { getPergunta } from './game/anamnese.js'
 import { SHIFTS } from './game/shifts.js'
 import {
-  aceitarAviso,
-  getAvisoAceito,
   getPerfil,
   getProgress,
   recordShiftCompletion,
@@ -41,7 +39,7 @@ import PainelAtendimento from './components/PainelAtendimento.jsx'
 import FeedbackAtendimento from './components/FeedbackAtendimento.jsx'
 import DistracaoOverlay from './components/DistracaoOverlay.jsx'
 import ModalConfirmacao from './components/ModalConfirmacao.jsx'
-import { TelaAviso, TelaInicio, SelecaoTurno, TelaResultadoTurno, TelaAjuda } from './components/Screens.jsx'
+import { TelaTermos, TelaInicio, SelecaoTurno, TelaResultadoTurno, TelaAjuda } from './components/Screens.jsx'
 import { PresenteDiario, TelaConquistas, TelaLoja, ToastsConquista } from './components/Recompensas.jsx'
 
 import './App.css'
@@ -91,7 +89,7 @@ export default function App() {
   const [shiftIndex, setShiftIndex] = useState(0)
   const [shiftState, setShiftState] = useState(() => createShiftState(SHIFTS[0]))
   const [progress, setProgress] = useState(() => getProgress())
-  const [avisoAceito, setAvisoAceito] = useState(() => getAvisoAceito())
+  const [mostrarTermos, setMostrarTermos] = useState(false)
   const [atendimentoAtivo, setAtendimentoAtivo] = useState(null)
   const [feedback, setFeedback] = useState(null)
   // "−4s" flutuante no cartão de quem acabou de responder uma pergunta
@@ -144,12 +142,16 @@ export default function App() {
     if (screen === 'inicio') setHoje(hojeLocal())
   }, [screen])
 
+  // o presente diário só existe depois do primeiro turno vencido — antes disso
+  // ele é só mais um clique entre o jogador novo e a primeira fase
+  const presenteLiberado = progress.unlockedIndex > 0
+
   // o presente diário se oferece sozinho uma vez por sessão, no menu inicial
   useEffect(() => {
-    if (!avisoAceito || screen !== 'inicio' || presenteOferecido.current) return
+    if (!presenteLiberado || screen !== 'inicio' || presenteOferecido.current) return
     presenteOferecido.current = true
     if (presenteDisponivel(perfil, hoje)) setMostrarPresente(true)
-  }, [avisoAceito, screen, perfil, hoje])
+  }, [presenteLiberado, screen, perfil, hoje])
 
   // fecha o painel de atendimento se o cliente ativo sumir (foi embora, etc.)
   useEffect(() => {
@@ -492,30 +494,26 @@ export default function App() {
       )}
 
       <AnimatePresence mode="wait">
-        {!avisoAceito && (
-          <TelaAviso
-            key="aviso"
-            onAceitar={() => {
-              aceitarAviso()
-              setAvisoAceito(true)
-            }}
-          />
+        {screen === 'inicio' && mostrarTermos && (
+          <TelaTermos key="termos" onFechar={() => setMostrarTermos(false)} />
         )}
-        {avisoAceito && screen === 'inicio' && !mostrarAjuda && !mostrarPresente && (
+        {screen === 'inicio' && !mostrarAjuda && !mostrarPresente && !mostrarTermos && (
           <TelaInicio
             key="inicio"
             perfil={perfil}
             progress={progress}
             presenteHoje={presenteDisponivel(perfil, hoje)}
+            mostrarPresente={presenteLiberado}
             bausDisponiveis={BAUS_ESTRELAS.filter((b) => bauDisponivel(perfil, progress, b)).length}
             onJogar={() => setScreen('selecao')}
             onComoJogar={() => setMostrarAjuda(true)}
             onConquistas={() => setScreen('conquistas')}
             onLoja={() => setScreen('loja')}
             onPresente={() => setMostrarPresente(true)}
+            onTermos={() => setMostrarTermos(true)}
           />
         )}
-        {avisoAceito && screen === 'inicio' && !mostrarAjuda && mostrarPresente && (
+        {screen === 'inicio' && !mostrarAjuda && mostrarPresente && (
           <PresenteDiario
             key="presente"
             perfil={perfil}
@@ -524,7 +522,7 @@ export default function App() {
             onFechar={() => setMostrarPresente(false)}
           />
         )}
-        {avisoAceito && screen === 'conquistas' && (
+        {screen === 'conquistas' && (
           <TelaConquistas
             key="conquistas"
             perfil={perfil}
@@ -533,7 +531,7 @@ export default function App() {
             onVoltar={() => setScreen('inicio')}
           />
         )}
-        {avisoAceito && screen === 'loja' && (
+        {screen === 'loja' && (
           <TelaLoja
             key="loja"
             perfil={perfil}
@@ -542,7 +540,7 @@ export default function App() {
             onVoltar={() => setScreen('inicio')}
           />
         )}
-        {avisoAceito && screen === 'selecao' && !mostrarAjuda && (
+        {screen === 'selecao' && !mostrarAjuda && (
           <SelecaoTurno
             key="selecao"
             shifts={SHIFTS}
