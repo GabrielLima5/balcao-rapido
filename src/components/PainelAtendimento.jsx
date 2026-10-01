@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Avatar from './Avatar.jsx'
 import Anamnese from './Anamnese.jsx'
@@ -17,8 +18,20 @@ export default function PainelAtendimento({
   onRecusar,
   onCancelar,
 }) {
+  const painelRef = useRef(null)
+
+  // no responsivo a prateleira fica embaixo da entrevista: ao escolher um
+  // remédio o jogador está lá no fim, e a ficha abriria fora da vista.
+  // Volta para o começo do painel, onde estão o cliente e o botão de entregar.
+  useEffect(() => {
+    if (step !== 'confirmacao' || !window.matchMedia('(max-width: 900px)').matches) return
+    const reduzirMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    painelRef.current?.scrollIntoView({ behavior: reduzirMovimento ? 'auto' : 'smooth', block: 'start' })
+  }, [step])
+
   return (
     <motion.div
+      ref={painelRef}
       className="painel-atendimento"
       initial={{ opacity: 0, y: 14, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
