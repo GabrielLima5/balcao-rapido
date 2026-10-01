@@ -104,3 +104,20 @@
     width: auto;
   }
 }
+
+.painel-atendimento__cancelar--rodape {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .painel-atendimento__cancelar--topo {
+    display: none;
+  }
+
+  .painel-atendimento__cancelar--rodape {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+}

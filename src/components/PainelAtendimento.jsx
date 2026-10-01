@@ -33,7 +33,11 @@ export default function PainelAtendimento({
           <h2 className="painel-atendimento__titulo">Atendendo {customer.nome}</h2>
           <p className="painel-atendimento__pedido">{customer.request.mensagem}</p>
         </div>
-        <button type="button" className="painel-atendimento__cancelar" onClick={onCancelar}>
+        <button
+          type="button"
+          className="painel-atendimento__cancelar painel-atendimento__cancelar--topo"
+          onClick={onCancelar}
+        >
           Cancelar atendimento
         </button>
       </div>
@@ -73,6 +77,16 @@ export default function PainelAtendimento({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* no celular o botão sai do topo (onde espremia o nome e o pedido) e vai
+          para o fim do painel, junto das outras ações */}
+      <button
+        type="button"
+        className="painel-atendimento__cancelar painel-atendimento__cancelar--rodape"
+        onClick={onCancelar}
+      >
+        Cancelar atendimento
+      </button>
     </motion.div>
   )
 }

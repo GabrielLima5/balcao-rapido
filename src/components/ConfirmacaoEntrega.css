@@ -169,3 +169,37 @@
   align-items: center;
   gap: 8px;
 }
+
+@media (max-width: 900px) {
+  .confirmacao__colunas {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* tela estreita: rótulo e valor lado a lado espremiam os dois. A pergunta
+   vai em cima e a resposta embaixo, ocupando a largura toda. */
+@media (max-width: 620px) {
+  .confirmacao__lista > div {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .confirmacao__lista dd {
+    text-align: left;
+    max-width: none;
+  }
+}
+
+/* o botão de entregar fica junto da caixa: no celular a ficha é longa e o
+   jogador não precisa rolar até o fim para concluir */
+.confirmacao__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.confirmacao__cabecalho .confirmacao__titulo {
+  margin-bottom: 0;
+}

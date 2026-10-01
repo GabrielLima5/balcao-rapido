@@ -45,7 +45,16 @@ export default function ConfirmacaoEntrega({ item, customer, onEntregar, onRecus
     >
       <div className="confirmacao__colunas">
         <section className="confirmacao__coluna">
-          <h3 className="confirmacao__titulo">Produto selecionado</h3>
+          <div className="confirmacao__cabecalho">
+            <h3 className="confirmacao__titulo">Produto selecionado</h3>
+            <button
+              type="button"
+              className="confirmacao__botao confirmacao__botao--entregar"
+              onClick={() => onEntregar({ receitaRetida, orientacaoDada })}
+            >
+              Entregar
+            </button>
+          </div>
 
           {/* Aqui — e só aqui — a embalagem mostra a validade. É o momento em
               que o jogador tem a caixa na mão: o carimbo é a etiqueta que ele
@@ -231,13 +240,6 @@ export default function ConfirmacaoEntrega({ item, customer, onEntregar, onRecus
           onClick={() => onRecusar({ receitaRetida, orientacaoDada })}
         >
           Recusar
-        </button>
-        <button
-          type="button"
-          className="confirmacao__botao confirmacao__botao--entregar"
-          onClick={() => onEntregar({ receitaRetida, orientacaoDada })}
-        >
-          Entregar
         </button>
       </div>
     </motion.div>
