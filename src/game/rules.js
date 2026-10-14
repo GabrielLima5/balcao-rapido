@@ -236,7 +236,7 @@ const drugInteraction = () => ({
 //   - pediu aquele produto pelo nome (não descreveu um sintoma),
 //   - tem a receita,
 //   - e o princípio que DEFINE o produto é o que ele já toma.
-// Sem a terceira, o Tylex® (codeína + paracetamol) passaria como "renovação"
+// Sem a terceira, o Tilexa (codeína + paracetamol) passaria como "renovação"
 // para quem toma paracetamol, quando na verdade ele soma paracetamol escondido.
 function ehRenovacaoDeUsoContinuo(product, customer) {
   const tipo = customer?.request?.type
@@ -314,8 +314,8 @@ const wrongProduct = () => ({
   blocksSale: true,
   describe: () => 'O produto entregue precisa corresponder ao que o cliente pediu.',
   test: ({ product, customer }) => !productSatisfiesRequest(product, customer?.request, customer),
-  // A mensagem aqui importa mais do que parece. Dizer "Vibral® não atende ao
-  // pedido ('tosse')" é confuso e ensina errado: o Vibral® É um xarope para
+  // A mensagem aqui importa mais do que parece. Dizer "Vibrex não atende ao
+  // pedido ('tosse')" é confuso e ensina errado: o Vibrex É um xarope para
   // tosse — o que não serve é ANTITUSSÍGENO numa tosse produtiva. Então a
   // explicação nunca diz "não é para isso"; diz qual era a conduta esperada, e
   // usa o `criterio` do pedido quando o turno escreveu o raciocínio clínico.
@@ -332,7 +332,7 @@ const wrongProduct = () => ({
       return `${product.nome} não corresponde a nenhum item ainda pendente da receita.`
     }
     // A classe do produto vem primeiro: é ela que responde "por que esse não
-    // serve, se está na mesma gôndola?". Buscopan® e Luftal® são ambos
+    // serve, se está na mesma gôndola?". Buscopex e Luftol são ambos
     // gastrointestinais, mas um é antiespasmódico e o outro antiflatulento.
     const classe = product.classeTerapeutica
     const abertura = classe ? `${product.nome} é ${classe}.` : `${product.nome} não serve para esse quadro.`

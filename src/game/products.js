@@ -1,18 +1,14 @@
-// Catálogo de produtos da farmácia — medicamentos REAIS.
+// Catálogo de produtos da farmácia — medicamentos FICTÍCIOS.
 //
-// Princípios ativos e nomes comerciais existem de verdade e são vendidos no
-// Brasil; as apresentações e concentrações foram conferidas em bula/farmácia
-// online (ver README). A ideia é que, ao ver "Novalgina® 500mg", o estudante
-// reconheça a caixa que ele vai encontrar no balcão — e saiba que ali dentro
-// tem dipirona.
+// Os nomes comerciais são inventados, de propósito parecidos com os de produtos
+// que existem no Brasil (Novalgex lembra um analgésico à base de dipirona, por
+// exemplo), para que o jogador raciocine sobre o remédio real ao ler o nome —
+// mas nenhum deles é uma marca real. Os princípios ativos (dipirona,
+// paracetamol...) são nomes genéricos e podem ser citados à vontade.
 //
-// ⚠️ AVISO DE MARCAS E DE CONTEÚDO — ver AVISO_MARCAS abaixo, exibido nos termos
-// de uso e na tela de ajuda. Resumo: as marcas citadas pertencem a seus
-// titulares, este jogo não tem vínculo com elas, e as REGRAS de
-// contraindicação, interação, alergia e controle usadas aqui são
-// SIMPLIFICADAS para fins de jogo. Não são bula e não servem de referência
-// clínica. Ao contrário do resto do catálogo, que é fiel à realidade, as
-// regras foram escolhidas para caber num jogo de 2 minutos.
+// ⚠️ AVISO — ver AVISO_JOGO abaixo, exibido na tela de ajuda. As regras de
+// contraindicação, interação, alergia e controle usadas aqui são SIMPLIFICADAS
+// para fins de jogo. Não são bula e não servem de referência clínica.
 //
 // Formato de cada produto:
 // { id, nome, marca, principioAtivo, composicao, dose, apresentacao,
@@ -31,28 +27,22 @@
 // do que dizendo "nunca" sobre um medicamento real.
 //
 // composicao  — todos os princípios ativos da fórmula (associações como
-//               Naldecon® e Tylex® têm mais de um). Usada pela regra de
+//               Naldecor e Tilexa têm mais de um). Usada pela regra de
 //               duplicidade terapêutica. Omitida => [principioAtivo].
 // principioAtivo — o que DEFINE o produto para o pedido do cliente. Numa
 //               associação é o componente que a caracteriza (fenilefrina no
-//               Naldecon® Dia), não todos os da fórmula.
+//               Naldecor Dia), não todos os da fórmula.
 // publicoAlvo — 'adulto' | 'pediatrico' | 'todos'.
 // generico    — true para o genérico; equivalenteA aponta a referência
 //               (mesmo princípio ativo, mesma dose).
 //
 // classeControlada: 'nenhuma' | 'tarja_vermelha' | 'tarja_preta'
 
-export const AVISO_MARCAS =
-  'Os medicamentos citados aqui são produtos reais e os nomes comerciais — Novalgina®, Tylenol®, ' +
-  'Advil®, Alivium®, Aspirina®, Claritin®, Zyrtec®, Polaramine®, Naldecon®, Losec®, Mylanta®, Buscopan®, ' +
-  'Luftal®, Imosec®, Pedialyte®, Bepantol®, Canesten®, Gyno-Daktarin®, Zovirax®, Nizoral®, ' +
-  'CataflamPro®, Amoxil®, Vibral®, Fluimucil®, Mucosolvan®, Sorine®, Aradois®, Marevan®, ' +
-  'Glifage®, Puran T4®, Valium® e Tylex® — são marcas registradas de seus respectivos ' +
-  'titulares. Este é um material educativo independente, sem vínculo, patrocínio ou aprovação ' +
-  'das empresas detentoras dessas marcas. As regras de contraindicação, interação, alergia e ' +
-  'controle usadas no jogo são SIMPLIFICADAS para caber na partida e NÃO reproduzem a bula — ' +
-  'não use este jogo como fonte de informação sobre nenhum medicamento real. Consulte sempre a ' +
-  'bula e um farmacêutico ou médico.'
+export const AVISO_JOGO =
+  'Balcão Rápido é um jogo de entretenimento. Os produtos e os nomes de medicamentos são fictícios, ' +
+  'e as regras de contraindicação, interação, alergia e controle foram inventadas e simplificadas — ' +
+  'podem estar erradas. NÃO use este jogo como fonte de informação sobre medicamentos ou saúde. ' +
+  'Consulte sempre um médico ou um farmacêutico e leia a bula.'
 
 export const CATEGORIAS = [
   { id: 'analgesicos', nome: 'Analgésicos e antitérmicos' },
@@ -115,7 +105,7 @@ const PRINCIPIO_LABEL = {
 // esse não serve, se está na mesma gôndola?").
 //
 // A classe é propriedade da molécula, então mora aqui e não em cada produto; as
-// associações (Naldecon®, Tylex®, Mylanta®) declaram a sua na própria entrada.
+// associações (Naldecor, Tilexa, Mylantax) declaram a sua na própria entrada.
 const CLASSE_POR_PRINCIPIO = {
   dipirona: 'analgésico e antitérmico',
   paracetamol: 'analgésico e antitérmico',
@@ -140,7 +130,6 @@ const CLASSE_POR_PRINCIPIO = {
   cloreto_de_sodio: 'solução salina nasal',
   dexpantenol: 'cicatrizante e reepitelizante',
   clotrimazol: 'antifúngico tópico',
-  miconazol: 'antifúngico tópico',
   cetoconazol: 'antifúngico tópico',
   aciclovir: 'antiviral tópico',
   amoxicilina: 'antibiótico (penicilina)',
@@ -177,9 +166,9 @@ export function labelPrincipios(ids = []) {
 const PRODUCTS_RAW = [
   // --- Analgésicos e antitérmicos -----------------------------------------
   {
-    id: 'novalgina-500',
-    nome: 'Novalgina® 500mg',
-    marca: 'Novalgina',
+    id: 'novalgex-500',
+    nome: 'Novalgex 500mg',
+    marca: 'Novalgex',
     principioAtivo: 'dipirona',
     dose: '500mg',
     apresentacao: 'comprimido',
@@ -201,16 +190,16 @@ const PRODUCTS_RAW = [
     publicoAlvo: 'adulto',
     categoria: 'analgesicos',
     generico: true,
-    equivalenteA: 'novalgina-500',
+    equivalenteA: 'novalgex-500',
     exigeReceita: false,
     classeControlada: 'nenhuma',
     contraindicacoes: [],
     interacoes: [],
   },
   {
-    id: 'novalgina-gotas',
-    nome: 'Novalgina® Gotas 500mg/mL',
-    marca: 'Novalgina',
+    id: 'novalgex-gotas',
+    nome: 'Novalgex Gotas 500mg/mL',
+    marca: 'Novalgex',
     principioAtivo: 'dipirona',
     dose: '500mg/mL',
     apresentacao: 'gotas',
@@ -223,9 +212,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'tylenol-500',
-    nome: 'Tylenol® 500mg',
-    marca: 'Tylenol',
+    id: 'tilenex-500',
+    nome: 'Tilenex 500mg',
+    marca: 'Tilenex',
     principioAtivo: 'paracetamol',
     dose: '500mg',
     apresentacao: 'comprimido',
@@ -238,9 +227,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'tylenol-750',
-    nome: 'Tylenol® 750mg',
-    marca: 'Tylenol',
+    id: 'tilenex-750',
+    nome: 'Tilenex 750mg',
+    marca: 'Tilenex',
     principioAtivo: 'paracetamol',
     dose: '750mg',
     apresentacao: 'comprimido',
@@ -262,16 +251,16 @@ const PRODUCTS_RAW = [
     publicoAlvo: 'adulto',
     categoria: 'analgesicos',
     generico: true,
-    equivalenteA: 'tylenol-750',
+    equivalenteA: 'tilenex-750',
     exigeReceita: false,
     classeControlada: 'nenhuma',
     contraindicacoes: [],
     interacoes: [],
   },
   {
-    id: 'tylenol-crianca',
-    nome: 'Tylenol® Criança Suspensão 32mg/mL',
-    marca: 'Tylenol',
+    id: 'tilenex-crianca',
+    nome: 'Tilenex Criança Suspensão 32mg/mL',
+    marca: 'Tilenex',
     principioAtivo: 'paracetamol',
     dose: '32mg/mL',
     apresentacao: 'suspensao',
@@ -284,9 +273,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'advil-400',
-    nome: 'Advil® 400mg',
-    marca: 'Advil',
+    id: 'advilon-400',
+    nome: 'Advilon 400mg',
+    marca: 'Advilon',
     principioAtivo: 'ibuprofeno',
     dose: '400mg',
     apresentacao: 'comprimido',
@@ -312,7 +301,7 @@ const PRODUCTS_RAW = [
     publicoAlvo: 'adulto',
     categoria: 'analgesicos',
     generico: true,
-    equivalenteA: 'advil-400',
+    equivalenteA: 'advilon-400',
     exigeReceita: false,
     classeControlada: 'nenhuma',
     contraindicacoes: ['gravidez'],
@@ -321,9 +310,9 @@ const PRODUCTS_RAW = [
     cautelasInteracao: ['losartana'],
   },
   {
-    id: 'alivium-gotas',
-    nome: 'Alivium® Gotas 100mg/mL',
-    marca: 'Alivium',
+    id: 'alivion-gotas',
+    nome: 'Alivion Gotas 100mg/mL',
+    marca: 'Alivion',
     principioAtivo: 'ibuprofeno',
     dose: '100mg/mL',
     apresentacao: 'gotas',
@@ -337,9 +326,9 @@ const PRODUCTS_RAW = [
   },
   {
     // AAS em criança com quadro febril viral: risco de síndrome de Reye.
-    id: 'aspirina-500',
-    nome: 'Aspirina® 500mg',
-    marca: 'Aspirina',
+    id: 'aspirix-500',
+    nome: 'Aspirix 500mg',
+    marca: 'Aspirix',
     principioAtivo: 'acido_acetilsalicilico',
     dose: '500mg',
     apresentacao: 'comprimido',
@@ -355,9 +344,9 @@ const PRODUCTS_RAW = [
 
   // --- Antialérgicos -------------------------------------------------------
   {
-    id: 'claritin-10',
-    nome: 'Claritin® 10mg',
-    marca: 'Claritin',
+    id: 'claritex-10',
+    nome: 'Claritex 10mg',
+    marca: 'Claritex',
     principioAtivo: 'loratadina',
     dose: '10mg',
     apresentacao: 'comprimido',
@@ -379,16 +368,16 @@ const PRODUCTS_RAW = [
     publicoAlvo: 'adulto',
     categoria: 'antialergicos',
     generico: true,
-    equivalenteA: 'claritin-10',
+    equivalenteA: 'claritex-10',
     exigeReceita: false,
     classeControlada: 'nenhuma',
     contraindicacoes: [],
     interacoes: [],
   },
   {
-    id: 'claritin-xarope',
-    nome: 'Claritin® Xarope 1mg/mL',
-    marca: 'Claritin',
+    id: 'claritex-xarope',
+    nome: 'Claritex Xarope 1mg/mL',
+    marca: 'Claritex',
     principioAtivo: 'loratadina',
     dose: '1mg/mL',
     apresentacao: 'xarope',
@@ -401,9 +390,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'zyrtec-10',
-    nome: 'Zyrtec® 10mg',
-    marca: 'Zyrtec',
+    id: 'zirtek-10',
+    nome: 'Zirtek 10mg',
+    marca: 'Zirtek',
     principioAtivo: 'cetirizina',
     dose: '10mg',
     apresentacao: 'comprimido',
@@ -425,7 +414,7 @@ const PRODUCTS_RAW = [
     publicoAlvo: 'adulto',
     categoria: 'antialergicos',
     generico: true,
-    equivalenteA: 'zyrtec-10',
+    equivalenteA: 'zirtek-10',
     exigeReceita: false,
     classeControlada: 'nenhuma',
     contraindicacoes: [],
@@ -434,9 +423,9 @@ const PRODUCTS_RAW = [
   {
     // anti-histamínico de 1ª geração: sedativo, e desaconselhado em idoso
     // (efeito anticolinérgico). Some com benzodiazepínico.
-    id: 'polaramine-2',
-    nome: 'Polaramine® 2mg',
-    marca: 'Polaramine',
+    id: 'polaramex-2',
+    nome: 'Polaramex 2mg',
+    marca: 'Polaramex',
     principioAtivo: 'dexclorfeniramina',
     dose: '2mg',
     apresentacao: 'comprimido',
@@ -453,10 +442,10 @@ const PRODUCTS_RAW = [
 
   // --- Antigripais (associações — atenção à duplicidade) -------------------
   {
-    id: 'naldecon-dia',
+    id: 'naldecor-dia',
     classeTerapeutica: 'antigripal (descongestionante + analgésico)',
-    nome: 'Naldecon® Dia',
-    marca: 'Naldecon',
+    nome: 'Naldecor Dia',
+    marca: 'Naldecor',
     principioAtivo: 'fenilefrina',
     composicao: ['paracetamol', 'fenilefrina'],
     dose: '400mg + 20mg',
@@ -470,10 +459,10 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'naldecon-noite',
+    id: 'naldecor-noite',
     classeTerapeutica: 'antigripal noturno (anti-histamínico + analgésico)',
-    nome: 'Naldecon® Noite',
-    marca: 'Naldecon',
+    nome: 'Naldecor Noite',
+    marca: 'Naldecor',
     principioAtivo: 'carbinoxamina',
     composicao: ['paracetamol', 'carbinoxamina'],
     dose: '400mg + 4mg',
@@ -493,9 +482,9 @@ const PRODUCTS_RAW = [
 
   // --- Gastrointestinal ----------------------------------------------------
   {
-    id: 'losec-20',
-    nome: 'Losec® 20mg',
-    marca: 'Losec',
+    id: 'losek-20',
+    nome: 'Losek 20mg',
+    marca: 'Losek',
     principioAtivo: 'omeprazol',
     dose: '20mg',
     apresentacao: 'capsula',
@@ -517,7 +506,7 @@ const PRODUCTS_RAW = [
     publicoAlvo: 'adulto',
     categoria: 'gastrointestinal',
     generico: true,
-    equivalenteA: 'losec-20',
+    equivalenteA: 'losek-20',
     exigeReceita: false,
     classeControlada: 'nenhuma',
     contraindicacoes: [],
@@ -526,10 +515,10 @@ const PRODUCTS_RAW = [
   {
     // antiácido: alívio rápido da azia, alternativa ao inibidor de bomba.
     // Traz simeticona na fórmula — mas quem quer só gás não quer isso aqui.
-    id: 'mylanta-plus',
+    id: 'mylantax-plus',
     classeTerapeutica: 'antiácido com antiflatulento',
-    nome: 'Mylanta® Plus Suspensão',
-    marca: 'Mylanta',
+    nome: 'Mylantax Plus Suspensão',
+    marca: 'Mylantax',
     principioAtivo: 'hidroxido_de_aluminio',
     composicao: ['hidroxido_de_aluminio', 'hidroxido_de_magnesio', 'simeticona'],
     dose: '400mg + 400mg + 30mg / 5mL',
@@ -544,9 +533,9 @@ const PRODUCTS_RAW = [
   },
   {
     // antiespasmódico anticolinérgico — cautela no idoso.
-    id: 'buscopan-10',
-    nome: 'Buscopan® 10mg',
-    marca: 'Buscopan',
+    id: 'buscopex-10',
+    nome: 'Buscopex 10mg',
+    marca: 'Buscopex',
     principioAtivo: 'butilescopolamina',
     dose: '10mg',
     apresentacao: 'comprimido',
@@ -560,9 +549,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'luftal-40',
-    nome: 'Luftal® 40mg',
-    marca: 'Luftal',
+    id: 'luftol-40',
+    nome: 'Luftol 40mg',
+    marca: 'Luftol',
     principioAtivo: 'simeticona',
     dose: '40mg',
     apresentacao: 'comprimido',
@@ -577,9 +566,9 @@ const PRODUCTS_RAW = [
   {
     // Antidiarreico: nunca em criança pequena. Em diarreia com sangue e febre
     // (disenteria) o caminho é reidratar e encaminhar, não travar o intestino.
-    id: 'imosec-2',
-    nome: 'Imosec® 2mg',
-    marca: 'Imosec',
+    id: 'imosek-2',
+    nome: 'Imosek 2mg',
+    marca: 'Imosek',
     principioAtivo: 'loperamida',
     dose: '2mg',
     apresentacao: 'capsula',
@@ -592,9 +581,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'pedialyte',
-    nome: 'Pedialyte® Solução Oral 500mL',
-    marca: 'Pedialyte',
+    id: 'pediolyte',
+    nome: 'Pediolyte Solução Oral 500mL',
+    marca: 'Pediolyte',
     principioAtivo: 'sais_de_reidratacao',
     dose: '500mL',
     apresentacao: 'solucao',
@@ -612,9 +601,9 @@ const PRODUCTS_RAW = [
   // (dropropizina); tosse PRODUTIVA pede mucolítico/expectorante — e o
   // antitussígeno é contraindicado nela, porque segurar a tosse retém secreção.
   {
-    id: 'vibral-adulto',
-    nome: 'Vibral® Xarope Adulto 3mg/mL',
-    marca: 'Vibral',
+    id: 'vibrex-adulto',
+    nome: 'Vibrex Xarope Adulto 3mg/mL',
+    marca: 'Vibrex',
     principioAtivo: 'dropropizina',
     dose: '3mg/mL',
     apresentacao: 'xarope',
@@ -627,9 +616,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'vibral-pediatrico',
-    nome: 'Vibral® Pediátrico Xarope 1,5mg/mL',
-    marca: 'Vibral',
+    id: 'vibrex-pediatrico',
+    nome: 'Vibrex Pediátrico Xarope 1,5mg/mL',
+    marca: 'Vibrex',
     principioAtivo: 'dropropizina',
     dose: '1,5mg/mL',
     apresentacao: 'xarope',
@@ -642,9 +631,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'fluimucil-600',
-    nome: 'Fluimucil® 600mg',
-    marca: 'Fluimucil',
+    id: 'fluimucyl-600',
+    nome: 'Fluimucyl 600mg',
+    marca: 'Fluimucyl',
     principioAtivo: 'acetilcisteina',
     dose: '600mg',
     apresentacao: 'efervescente',
@@ -659,9 +648,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'mucosolvan-adulto',
-    nome: 'Mucosolvan® Xarope Adulto 30mg/5mL',
-    marca: 'Mucosolvan',
+    id: 'mucosolvex-adulto',
+    nome: 'Mucosolvex Xarope Adulto 30mg/5mL',
+    marca: 'Mucosolvex',
     principioAtivo: 'ambroxol',
     dose: '30mg/5mL',
     apresentacao: 'xarope',
@@ -675,9 +664,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'mucosolvan-infantil',
-    nome: 'Mucosolvan® Infantil Xarope 15mg/5mL',
-    marca: 'Mucosolvan',
+    id: 'mucosolvex-infantil',
+    nome: 'Mucosolvex Infantil Xarope 15mg/5mL',
+    marca: 'Mucosolvex',
     principioAtivo: 'ambroxol',
     dose: '15mg/5mL',
     apresentacao: 'xarope',
@@ -693,9 +682,9 @@ const PRODUCTS_RAW = [
   {
     // vasoconstritor nasal: não passa de 3-5 dias. Uso prolongado causa rinite
     // medicamentosa (congestão de rebote) — e aí o caso deixa de ser de balcão.
-    id: 'sorine-adulto',
-    nome: 'Sorine® Adulto Solução Nasal',
-    marca: 'Sorine',
+    id: 'sorinex-adulto',
+    nome: 'Sorinex Adulto Solução Nasal',
+    marca: 'Sorinex',
     principioAtivo: 'nafazolina',
     dose: '0,5mg/mL',
     apresentacao: 'solucao',
@@ -725,9 +714,9 @@ const PRODUCTS_RAW = [
 
   // --- Dermatológicos ------------------------------------------------------
   {
-    id: 'bepantol-derma',
-    nome: 'Bepantol® Derma Creme',
-    marca: 'Bepantol',
+    id: 'bepantex-derma',
+    nome: 'Bepantex Derma Creme',
+    marca: 'Bepantex',
     principioAtivo: 'dexpantenol',
     dose: '50mg/g',
     apresentacao: 'creme',
@@ -740,9 +729,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'canesten-creme',
-    nome: 'Canesten® Creme 1%',
-    marca: 'Canesten',
+    id: 'canestex-creme',
+    nome: 'Canestex Creme 1%',
+    marca: 'Canestex',
     principioAtivo: 'clotrimazol',
     dose: '10mg/g',
     apresentacao: 'creme',
@@ -755,24 +744,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'gyno-daktarin',
-    nome: 'Gyno-Daktarin® Creme Vaginal 2%',
-    marca: 'Gyno-Daktarin',
-    principioAtivo: 'miconazol',
-    dose: '20mg/g',
-    apresentacao: 'creme',
-    publicoAlvo: 'adulto',
-    categoria: 'dermatologicos',
-    generico: false,
-    exigeReceita: false,
-    classeControlada: 'nenhuma',
-    contraindicacoes: [],
-    interacoes: [],
-  },
-  {
-    id: 'zovirax-creme',
-    nome: 'Zovirax® Creme 5%',
-    marca: 'Zovirax',
+    id: 'zovirex-creme',
+    nome: 'Zovirex Creme 5%',
+    marca: 'Zovirex',
     principioAtivo: 'aciclovir',
     dose: '50mg/g',
     apresentacao: 'creme',
@@ -785,9 +759,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'nizoral-xampu',
-    nome: 'Nizoral® Xampu 2%',
-    marca: 'Nizoral',
+    id: 'nizorex-xampu',
+    nome: 'Nizorex Xampu 2%',
+    marca: 'Nizorex',
     principioAtivo: 'cetoconazol',
     dose: '20mg/g',
     apresentacao: 'xampu',
@@ -800,9 +774,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'cataflam-emulgel',
-    nome: 'CataflamPro® Emulgel',
-    marca: 'CataflamPro',
+    id: 'cataflex-emulgel',
+    nome: 'CataflexPro Emulgel',
+    marca: 'CataflexPro',
     principioAtivo: 'diclofenaco',
     dose: '11,6mg/g',
     apresentacao: 'gel',
@@ -821,9 +795,9 @@ const PRODUCTS_RAW = [
 
   // --- Antibióticos (receita + retenção: RDC 20/2011) ----------------------
   {
-    id: 'amoxil-500',
-    nome: 'Amoxil® 500mg',
-    marca: 'Amoxil',
+    id: 'amoxilan-500',
+    nome: 'Amoxilan 500mg',
+    marca: 'Amoxilan',
     principioAtivo: 'amoxicilina',
     dose: '500mg',
     apresentacao: 'capsula',
@@ -847,7 +821,7 @@ const PRODUCTS_RAW = [
     publicoAlvo: 'adulto',
     categoria: 'antibioticos',
     generico: true,
-    equivalenteA: 'amoxil-500',
+    equivalenteA: 'amoxilan-500',
     exigeReceita: true,
     classeControlada: 'nenhuma',
     contraindicacoes: [],
@@ -856,9 +830,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'amoxil-suspensao',
-    nome: 'Amoxil® Suspensão 500mg/5mL',
-    marca: 'Amoxil',
+    id: 'amoxilan-suspensao',
+    nome: 'Amoxilan Suspensão 500mg/5mL',
+    marca: 'Amoxilan',
     principioAtivo: 'amoxicilina',
     dose: '500mg/5mL',
     apresentacao: 'suspensao',
@@ -879,9 +853,9 @@ const PRODUCTS_RAW = [
   // ponta das interações mais perigosas do balcão (AINE × anticoagulante,
   // AINE × anti-hipertensivo).
   {
-    id: 'aradois-50',
-    nome: 'Aradois® 50mg',
-    marca: 'Aradois',
+    id: 'aradoze-50',
+    nome: 'Aradoze 50mg',
+    marca: 'Aradoze',
     principioAtivo: 'losartana',
     dose: '50mg',
     apresentacao: 'comprimido',
@@ -903,16 +877,16 @@ const PRODUCTS_RAW = [
     publicoAlvo: 'adulto',
     categoria: 'cronicos',
     generico: true,
-    equivalenteA: 'aradois-50',
+    equivalenteA: 'aradoze-50',
     exigeReceita: true,
     classeControlada: 'nenhuma',
     contraindicacoes: ['gravidez'],
     interacoes: [],
   },
   {
-    id: 'marevan-5',
-    nome: 'Marevan® 5mg',
-    marca: 'Marevan',
+    id: 'marevex-5',
+    nome: 'Marevex 5mg',
+    marca: 'Marevex',
     principioAtivo: 'varfarina',
     dose: '5mg',
     apresentacao: 'comprimido',
@@ -925,9 +899,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'glifage-850',
-    nome: 'Glifage® 850mg',
-    marca: 'Glifage',
+    id: 'glifex-850',
+    nome: 'Glifex 850mg',
+    marca: 'Glifex',
     principioAtivo: 'metformina',
     dose: '850mg',
     apresentacao: 'comprimido',
@@ -940,9 +914,9 @@ const PRODUCTS_RAW = [
     interacoes: [],
   },
   {
-    id: 'puran-t4-50',
-    nome: 'Puran T4® 50mcg',
-    marca: 'Puran T4',
+    id: 'purano-t4-50',
+    nome: 'Purano T4 50mcg',
+    marca: 'Purano T4',
     principioAtivo: 'levotiroxina',
     dose: '50mcg',
     apresentacao: 'comprimido',
@@ -957,9 +931,9 @@ const PRODUCTS_RAW = [
 
   // --- Controlados ---------------------------------------------------------
   {
-    id: 'valium-5',
-    nome: 'Valium® 5mg',
-    marca: 'Valium',
+    id: 'valion-5',
+    nome: 'Valion 5mg',
+    marca: 'Valion',
     principioAtivo: 'diazepam',
     dose: '5mg',
     apresentacao: 'comprimido',
@@ -977,10 +951,10 @@ const PRODUCTS_RAW = [
   {
     // associação: paracetamol 500mg + codeína 30mg. A codeína é que faz dele
     // controlado — mas o paracetamol escondido é o que causa duplicidade.
-    id: 'tylex-30',
+    id: 'tilexa-30',
     classeTerapeutica: 'analgésico opioide associado a paracetamol',
-    nome: 'Tylex® 30mg',
-    marca: 'Tylex',
+    nome: 'Tilexa 30mg',
+    marca: 'Tilexa',
     principioAtivo: 'codeina',
     composicao: ['paracetamol', 'codeina'],
     dose: '500mg + 30mg',

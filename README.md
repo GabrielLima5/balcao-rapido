@@ -5,37 +5,28 @@ Dash / Overcooked, em ritmo mais calmo, com turnos por dia). React + Vite +
 JavaScript puro (sem TypeScript), CSS simples por componente, framer-motion
 para transições. Interface e textos em português do Brasil.
 
-O público-alvo são estudantes de Farmácia: o jogo não é "leia a ficha e ache a
-caixa", é **conduzir um atendimento** — entrevistar quem está no balcão,
-descobrir o que muda a decisão e escolher entre dispensar e recusar.
+O jogo não é "leia a ficha e ache a caixa", é **conduzir um atendimento** —
+entrevistar quem está no balcão, descobrir o que muda a decisão e escolher entre
+dispensar e recusar.
 
-## Os medicamentos são reais
+## Os medicamentos são fictícios
 
-Princípios ativos **e** nomes comerciais existem de verdade e são vendidos no
-Brasil — Novalgina®, Tylenol®, Advil®, Alivium®, Aspirina®, Claritin®, Zyrtec®,
-Polaramine®, Naldecon®, Losec®, Mylanta®, Buscopan®, Luftal®, Imosec®,
-Pedialyte®, Vibral®, Fluimucil®, Mucosolvan®, Sorine®, Bepantol®, Canesten®,
-Gyno-Daktarin®, Zovirax®, Nizoral®, CataflamPro®, Amoxil®, Aradois®, Marevan®,
-Glifage®, Puran T4®, Valium® e Tylex®. Cada um foi conferido em bula ou
-farmácia online antes de entrar no catálogo, junto com a apresentação e a
-concentração. A ideia é que quem joga reconheça a caixa que vai encontrar no
-balcão de verdade — e saiba o que tem dentro dela.
+Os **princípios ativos** (dipirona, paracetamol, ibuprofeno...) são nomes
+genéricos; os **nomes comerciais** — Novalgex, Tilenex, Advilon, Aspirix,
+Claritex e os demais — são inventados, de propósito parecidos com os de produtos
+que existem, para que quem joga pense no remédio real ao ler o nome. Nenhum é
+marca real.
 
-> **Aviso.** As marcas citadas são registradas de seus respectivos titulares.
-> Este é um material educativo independente, sem vínculo, patrocínio ou
-> aprovação das empresas detentoras dessas marcas.
+> **Isto é um jogo de entretenimento.** Os produtos e as regras de
+> contraindicação, interação, alergia e controle são inventados e SIMPLIFICADOS
+> para caber numa partida de dois minutos; podem estar errados. Não use este
+> jogo como fonte de informação sobre medicamentos ou saúde — consulte sempre
+> um médico ou um farmacêutico e leia a bula.
 >
-> **As regras de atendimento usadas no jogo são SIMPLIFICADAS para caber numa
-> partida de dois minutos e NÃO reproduzem a bula.** Ao contrário do catálogo,
-> que é fiel à realidade, elas foram escolhidas por valor pedagógico. Não use
-> este jogo como fonte de informação sobre nenhum medicamento real — consulte
-> sempre a bula e um farmacêutico ou médico.
->
-> O jogo **não deixa começar** sem passar por essa tela: `TelaAviso` bloqueia a
-> entrada até o jogador confirmar, e o aceite fica em `storage.js`, numa chave
-> própria, separada do progresso — resetar o progresso não deve fazer o aviso
-> voltar, e vice-versa. O texto canônico das marcas vive em `AVISO_MARCAS`
-> (`src/game/products.js`).
+> O botão **Jogar** só é liberado depois que o jogador marca a caixa "Li e
+> concordo com os termos de uso" na tela inicial (`TelaInicio`). O texto dos
+> termos vive em `TelaTermos` (`src/components/Screens.jsx`) e o aviso curto
+> em `AVISO_JOGO` (`src/game/products.js`).
 
 ### Contraindicação não é cautela
 
@@ -51,12 +42,12 @@ quer desensinar:
 Recusar uma cautela conta como recusa indevida (havia como atender); entregar
 uma cautela sem orientar conta como erro de dispensação. Na dúvida ao escrever
 conteúdo novo, **escolha cautela**: o jogo erra menos dizendo "oriente" do que
-dizendo "nunca" sobre um medicamento real. Buscopan® em idoso, Polaramine® na
+dizendo "nunca" sobre um medicamento real. Buscopex em idoso, Polaramex na
 gravidez e AINE sobre anti-hipertensivo são cautela; AAS em criança, codeína
 abaixo de 12 anos, losartana na gravidez e AINE sobre anticoagulante são muro.
 
-Ao acrescentar um produto: confira que ele existe, use o nome comercial com ®,
-acerte apresentação/concentração, e acrescente a marca à lista de `AVISO_MARCAS`.
+Ao acrescentar um produto: **invente** o nome comercial (parecido com o real, mas
+nunca idêntico a uma marca existente) e acerte apresentação/concentração.
 
 ## Rodando
 
@@ -92,7 +83,7 @@ a fila estourar o limite visível.
 | Tipo | O que o cliente quer | O que exercita |
 |---|---|---|
 | `sintoma` | só a queixa ("meu filho está com febre") | chegar no princípio ativo e na apresentação |
-| `produto` | um item pelo nome ("Tylenol® 750") | leitura fina de marca e dose |
+| `produto` | um item pelo nome ("Tilenex 750") | leitura fina de marca e dose |
 | `generico` | o genérico de uma referência | intercambialidade: mesmo princípio ativo **e** mesma dose |
 | `receita` | 1-3 itens prescritos | atender item a item, recusando só o que não pode sair |
 
@@ -107,7 +98,7 @@ mesma aba parece arbitrária. Duas peças resolvem isso:
 - **`criterio`**, no pedido, é o raciocínio clínico em uma frase — *depois* do erro, explicando o que
   aquele quadro pedia e por quê.
 
-Juntas, a recusa vira: *"Vibral® Xarope Adulto é antitussígeno. Tosse produtiva pede mucolítico ou
+Juntas, a recusa vira: *"Vibrex Xarope Adulto é antitussígeno. Tosse produtiva pede mucolítico ou
 expectorante; antitussígeno segura a tosse e retém a secreção no pulmão."* — em vez do antigo e
 inútil "não atende ao pedido ('tosse')".
 
@@ -117,13 +108,13 @@ Ao escrever um produto novo, confira a classe; ao escrever um sintoma novo, escr
 do estoque, então quando `principiosAceitos` mistura classes que **não** são intercambiáveis para
 aquela queixa, a "resposta certa" do jogo vira arbitrária — e pode cair justamente sobre a classe que
 o `criterio` diz não servir. Foi o que aconteceu com "nariz entupido e corpo doendo", que aceitava
-paracetamol e entregava Tylenol® enquanto explicava que analgésico puro não desentope. Ao misturar
+paracetamol e entregava Tilenex enquanto explicava que analgésico puro não desentope. Ao misturar
 classes numa lista, garanta uma destas duas coisas: ou elas são de fato intercambiáveis para a
 queixa, ou o `criterio` explica quando cair na segunda opção ("se o descongestionante estiver fora,
 trate o que dá para tratar").
 
 **`principiosAceitos` deve conter tudo que é clinicamente razoável para a queixa.** Quem exclui é a
-regra de segurança, não a lista: assim uma Aspirina® oferecida a uma criança com febre é recusada
+regra de segurança, não a lista: assim uma Aspirix oferecida a uma criança com febre é recusada
 por *contraindicação* (síndrome de Reye), e não pelo inútil "não atende ao pedido". Estreite a lista
 só quando a fala do cliente justificar ("só paracetamol funciona comigo").
 
@@ -201,12 +192,12 @@ continua sem tocar DOM/timers diretamente.
   `make() => instance`, sempre todas ativas — o jogo não esconde regras (ver tela
   de Ajuda no jogo). As regras avaliam o **paciente** (`getPaciente`), que nem
   sempre é o cliente.
-- **`src/game/products.js`** — catálogo estático de 49 produtos reais (31 marcas,
-  33 princípios ativos, 9 categorias), carregando composição (para associações como Naldecon® e
-  Tylex®), dose, apresentação, público-alvo, par genérico ↔ referência, classe
+- **`src/game/products.js`** — catálogo estático de 48 produtos fictícios (30 marcas,
+  33 princípios ativos, 9 categorias), carregando composição (para associações como Naldecor e
+  Tilexa), dose, apresentação, público-alvo, par genérico ↔ referência, classe
   alergênica (por família, para pegar reação cruzada) e se a receita fica retida.
   Retenção não é só tarja preta/vermelha: antimicrobiano também retém. Também
-  mora aqui o `AVISO_MARCAS` exibido no jogo.
+  mora aqui o `AVISO_JOGO` exibido no jogo.
 - **`src/game/shifts.js`** — os 15 turnos, escritos à mão (não gerados — ver
   comentário no arquivo sobre por quê, e a regra de ouro para escrever um
   cliente novo).

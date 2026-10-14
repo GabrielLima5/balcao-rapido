@@ -5,7 +5,7 @@
 // remédio, se tem receita) NÃO aparecem de graça: eles só entram na ficha
 // depois que o jogador PERGUNTA, e cada pergunta consome paciência daquele
 // cliente. Entregar sem perguntar continua sendo possível — e é exatamente a
-// aposta que o jogo quer que o estudante aprenda a não fazer.
+// aposta que o jogo quer que o jogador aprenda a não fazer.
 //
 // As regras (src/game/rules.js) continuam avaliando a VERDADE sobre o paciente,
 // perguntada ou não. Esconder o dado muda o que o jogador sabe, nunca o que é

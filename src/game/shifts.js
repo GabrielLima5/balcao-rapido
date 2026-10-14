@@ -137,7 +137,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoProduto('novalgina-500', 'Novalgina® 500mg', 'Oi, preciso de Novalgina® 500mg.'),
+        request: pedidoProduto('novalgex-500', 'Novalgex 500mg', 'Oi, preciso de Novalgex 500mg.'),
       },
       {
         id: 'c2',
@@ -149,7 +149,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoProduto('tylenol-750', 'Tylenol® 750mg', 'Vim buscar Tylenol® 750mg.'),
+        request: pedidoProduto('tilenex-750', 'Tilenex 750mg', 'Vim buscar Tilenex 750mg.'),
       },
       {
         id: 'c3',
@@ -162,9 +162,9 @@ export const SHIFTS = [
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
         request: pedidoProduto(
-          'tylenol-500',
-          'Tylenol® 500mg',
-          'Quero Tylenol®, mas o de 500 — não o de 750.',
+          'tilenex-500',
+          'Tilenex 500mg',
+          'Quero Tilenex, mas o de 500 — não o de 750.',
         ),
       },
       {
@@ -177,7 +177,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoProduto('advil-400', 'Advil® 400mg', 'Me vê um Advil® 400.'),
+        request: pedidoProduto('advilon-400', 'Advilon 400mg', 'Me vê um Advilon 400.'),
       },
     ],
   },
@@ -209,8 +209,8 @@ export const SHIFTS = [
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
         request: pedidoGenerico(
-          'tylenol-750',
-          'O médico escreveu Tylenol® 750, mas eu queria o genérico, que sai mais barato.',
+          'tilenex-750',
+          'O médico escreveu Tilenex 750, mas eu queria o genérico, que sai mais barato.',
         ),
       },
       {
@@ -224,9 +224,9 @@ export const SHIFTS = [
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
         request: pedidoProduto(
-          'claritin-10',
-          'Claritin® 10mg',
-          'Quero o Claritin® 10mg mesmo, o de marca — genérico eu não levo.',
+          'claritex-10',
+          'Claritex 10mg',
+          'Quero o Claritex 10mg mesmo, o de marca — genérico eu não levo.',
         ),
       },
       {
@@ -251,7 +251,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoGenerico('advil-400', 'Tem o genérico do Advil® 400? É pra uma dor no joelho.'),
+        request: pedidoGenerico('advilon-400', 'Tem o genérico do Advilon 400? É pra uma dor no joelho.'),
       },
       {
         id: 'c5',
@@ -306,7 +306,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: true,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoProduto('amoxil-500', 'Amoxil® 500mg', 'O médico passou Amoxil® 500mg pra mim.'),
+        request: pedidoProduto('amoxilan-500', 'Amoxilan 500mg', 'O médico passou Amoxilan 500mg pra mim.'),
       },
       {
         id: 'c3',
@@ -364,7 +364,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoGenerico('losec-20', 'Tem o genérico do Losec® 20?'),
+        request: pedidoGenerico('losek-20', 'Tem o genérico do Losek 20?'),
       },
     ],
   },
@@ -463,7 +463,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoGenerico('tylenol-750', 'Tem o genérico do Tylenol® 750?'),
+        request: pedidoGenerico('tilenex-750', 'Tem o genérico do Tilenex 750?'),
       },
       {
         id: 'c6',
@@ -579,7 +579,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoGenerico('advil-400', 'Tem o genérico do Advil® 400?'),
+        request: pedidoGenerico('advilon-400', 'Tem o genérico do Advilon 400?'),
       },
       {
         id: 'c6',
@@ -620,9 +620,9 @@ export const SHIFTS = [
       ['analgesicos', 'antialergicos', 'antigripais', 'gastrointestinal', 'dermatologicos', 'antibioticos'],
       {
         // lotes duplicados: existe um bom e um vencido do mesmo produto
-        extras: [loteVencido('novalgina-500'), loteVencido('claritin-10'), loteVencido('bepantol-derma')],
+        extras: [loteVencido('novalgex-500'), loteVencido('claritex-10'), loteVencido('bepantex-derma')],
         // sem alternativa: todo paracetamol de adulto do turno está vencido
-        vencidos: ['tylenol-500', 'tylenol-750', 'paracetamol-gen-750'],
+        vencidos: ['tilenex-500', 'tilenex-750', 'paracetamol-gen-750'],
       },
     ),
     distractions: [],
@@ -637,7 +637,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoProduto('novalgina-500', 'Novalgina® 500mg', 'Uma Novalgina® 500, por favor.'),
+        request: pedidoProduto('novalgex-500', 'Novalgex 500mg', 'Uma Novalgex 500, por favor.'),
       },
       {
         id: 'c2',
@@ -701,7 +701,7 @@ export const SHIFTS = [
         request: pedidoSintoma(
           'micose',
           'Tá descamando e coçando entre os dedos do pé faz umas duas semanas.',
-          ['clotrimazol'], { criterio: 'micose interdigital pede antifúngico tópico em creme (clotrimazol); xampu antifúngico é para couro cabeludo e creme vaginal é para candidíase' }),
+          ['clotrimazol'], { criterio: 'micose interdigital pede antifúngico tópico em creme (clotrimazol); xampu antifúngico é para couro cabeludo' }),
       },
     ],
   },
@@ -748,9 +748,9 @@ export const SHIFTS = [
         alergias: ['penicilina'],
         jaTomaPrincipiosAtivos: [],
         request: pedidoProduto(
-          'amoxil-500',
-          'Amoxil® 500mg',
-          'O médico passou Amoxil® 500mg, tenho a receita aqui.',
+          'amoxilan-500',
+          'Amoxilan 500mg',
+          'O médico passou Amoxilan 500mg, tenho a receita aqui.',
         ),
       },
       {
@@ -821,7 +821,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoGenerico('claritin-10', 'Queria o genérico do Claritin® 10.'),
+        request: pedidoGenerico('claritex-10', 'Queria o genérico do Claritex 10.'),
       },
     ],
   },
@@ -933,7 +933,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: true,
         jaTomaPrincipiosAtivos: ['dexclorfeniramina'],
-        request: pedidoProduto('valium-5', 'Valium® 5mg', 'Trouxe a receita do Valium® 5mg.'),
+        request: pedidoProduto('valion-5', 'Valion 5mg', 'Trouxe a receita do Valion 5mg.'),
       },
       {
         id: 'c6',
@@ -945,7 +945,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoGenerico('losec-20', 'Tem o genérico do Losec® 20?'),
+        request: pedidoGenerico('losek-20', 'Tem o genérico do Losek 20?'),
       },
     ],
   },
@@ -1007,7 +1007,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: true,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoProduto('tylex-30', 'Tylex® 30mg', 'Vim buscar o Tylex® 30mg que o médico passou.'),
+        request: pedidoProduto('tilexa-30', 'Tilexa 30mg', 'Vim buscar o Tilexa 30mg que o médico passou.'),
       },
       {
         id: 'c2',
@@ -1020,7 +1020,7 @@ export const SHIFTS = [
         hasReceita: true,
         jaTomaPrincipiosAtivos: [],
         paciente: paciente('meu filho', 9, { pronome: 'ele' }),
-        request: pedidoProduto('tylex-30', 'Tylex® 30mg', 'É pro meu filho, o pediatra passou Tylex® 30mg.'),
+        request: pedidoProduto('tilexa-30', 'Tilexa 30mg', 'É pro meu filho, o pediatra passou Tilexa 30mg.'),
       },
       {
         id: 'c3',
@@ -1032,7 +1032,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: true,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoProduto('valium-5', 'Valium® 5mg', 'Valium® 5mg — a receita está aqui.'),
+        request: pedidoProduto('valion-5', 'Valion 5mg', 'Valion 5mg — a receita está aqui.'),
       },
       {
         id: 'c4',
@@ -1044,7 +1044,7 @@ export const SHIFTS = [
         tags: ['gravidez'],
         hasReceita: true,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoProduto('valium-5', 'Valium® 5mg', 'Preciso do Valium® 5mg, tenho a receita.'),
+        request: pedidoProduto('valion-5', 'Valion 5mg', 'Preciso do Valion 5mg, tenho a receita.'),
       },
       {
         id: 'c5',
@@ -1056,7 +1056,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: true,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoGenerico('amoxil-500', 'Tem o genérico do Amoxil® 500? A receita está comigo.'),
+        request: pedidoGenerico('amoxilan-500', 'Tem o genérico do Amoxilan 500? A receita está comigo.'),
       },
       {
         id: 'c6',
@@ -1119,7 +1119,7 @@ export const SHIFTS = [
         'antibioticos',
         'controlados',
       ],
-      { extras: [loteVencido('novalgina-500'), loteVencido('amoxicilina-gen-500'), loteVencido('losec-20')] },
+      { extras: [loteVencido('novalgex-500'), loteVencido('amoxicilina-gen-500'), loteVencido('losek-20')] },
     ),
     distractions: [
       { id: 'd1', triggerMs: sec(36), tipo: 'telefone', durationMs: sec(12) },
@@ -1247,7 +1247,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: true,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoProduto('valium-5', 'Valium® 5mg', 'Valium® 5mg, com receita.'),
+        request: pedidoProduto('valion-5', 'Valion 5mg', 'Valion 5mg, com receita.'),
       },
       {
         id: 'c8',
@@ -1380,9 +1380,9 @@ export const SHIFTS = [
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
         request: pedidoProduto(
-          'sorine-adulto',
-          'Sorine® Adulto Solução Nasal',
-          'Me vê um Sorine®, o meu acabou hoje de manhã.',
+          'sorinex-adulto',
+          'Sorinex Adulto Solução Nasal',
+          'Me vê um Sorinex, o meu acabou hoje de manhã.',
           {
             quadro:
               'Uso todo dia faz umas três semanas. Se eu não pingo, entope tudo de novo em uma hora e eu não consigo respirar.',
@@ -1418,7 +1418,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoGenerico('claritin-10', 'Tem o genérico do Claritin® 10?'),
+        request: pedidoGenerico('claritex-10', 'Tem o genérico do Claritex 10?'),
       },
     ],
   },
@@ -1492,9 +1492,9 @@ export const SHIFTS = [
         hasReceita: false,
         jaTomaPrincipiosAtivos: ['varfarina'],
         request: pedidoProduto(
-          'aspirina-500',
-          'Aspirina® 500mg',
-          'Me vê uma Aspirina®. Eu sempre tomo quando dói a cabeça, pode deixar.',
+          'aspirix-500',
+          'Aspirix 500mg',
+          'Me vê uma Aspirix. Eu sempre tomo quando dói a cabeça, pode deixar.',
         ),
       },
       {
@@ -1507,7 +1507,7 @@ export const SHIFTS = [
         tags: ['hipertensao'],
         hasReceita: true,
         jaTomaPrincipiosAtivos: ['losartana'],
-        request: pedidoProduto('aradois-50', 'Aradois® 50mg', 'Vim buscar meu remédio de pressão, tenho a receita.'),
+        request: pedidoProduto('aradoze-50', 'Aradoze 50mg', 'Vim buscar meu remédio de pressão, tenho a receita.'),
       },
       {
         id: 'c5',
@@ -1535,8 +1535,8 @@ export const SHIFTS = [
         // pomada "não é remédio de verdade" — mas diclofenaco tópico entra na
         // circulação e some com o anticoagulante do mesmo jeito.
         request: pedidoProduto(
-          'cataflam-emulgel',
-          'CataflamPro® Emulgel',
+          'cataflex-emulgel',
+          'CataflexPro Emulgel',
           'Me vê aquele gel pra dor no ombro. É só pomada, nem é remédio de tomar.',
         ),
       },
@@ -1555,9 +1555,9 @@ export const SHIFTS = [
         // cautela — dispensa, mas orientando. É o contraste que ensina que
         // "interage" não quer dizer "nunca".
         request: pedidoProduto(
-          'cataflam-emulgel',
-          'CataflamPro® Emulgel',
-          'Queria aquele gel pra dor nas costas, o CataflamPro®.',
+          'cataflex-emulgel',
+          'CataflexPro Emulgel',
+          'Queria aquele gel pra dor nas costas, o CataflexPro.',
         ),
       },
     ],
@@ -1598,7 +1598,7 @@ export const SHIFTS = [
         'cronicos',
         'controlados',
       ],
-      { extras: [loteVencido('tylenol-500'), loteVencido('luftal-40')] },
+      { extras: [loteVencido('tilenex-500'), loteVencido('luftol-40')] },
     ),
     distractions: [
       { id: 'd1', triggerMs: sec(26), tipo: 'telefone', durationMs: sec(11) },
@@ -1684,7 +1684,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoProduto('tylenol-500', 'Tylenol® 500mg', 'Um Tylenol® 500, por favor.'),
+        request: pedidoProduto('tilenex-500', 'Tilenex 500mg', 'Um Tilenex 500, por favor.'),
       },
       {
         id: 'c5',
@@ -1696,7 +1696,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: true,
         jaTomaPrincipiosAtivos: [],
-        request: pedidoGenerico('amoxil-500', 'Tem o genérico do Amoxil® 500? A receita tá aqui.'),
+        request: pedidoGenerico('amoxilan-500', 'Tem o genérico do Amoxilan 500? A receita tá aqui.'),
       },
       {
         id: 'c6',
@@ -1791,9 +1791,9 @@ export const SHIFTS = [
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
         request: pedidoProduto(
-          'amoxil-500',
-          'Amoxil® 500mg',
-          'Me vê um Amoxil® 500. Eu sei o que eu tenho, já tomei isso outras vezes.',
+          'amoxilan-500',
+          'Amoxilan 500mg',
+          'Me vê um Amoxilan 500. Eu sei o que eu tenho, já tomei isso outras vezes.',
         ),
       },
       {
@@ -1808,9 +1808,9 @@ export const SHIFTS = [
         alergias: ['aine'],
         jaTomaPrincipiosAtivos: [],
         request: pedidoProduto(
-          'advil-400',
-          'Advil® 400mg',
-          'Um Advil® 400. Pode ser esse mesmo, é o que sempre funciona comigo.',
+          'advilon-400',
+          'Advilon 400mg',
+          'Um Advilon 400. Pode ser esse mesmo, é o que sempre funciona comigo.',
         ),
       },
       {
@@ -1845,9 +1845,9 @@ export const SHIFTS = [
         hasReceita: false,
         jaTomaPrincipiosAtivos: ['paracetamol'],
         request: pedidoProduto(
-          'naldecon-dia',
-          'Naldecon® Dia',
-          'Me vê um Naldecon® Dia, é o que corta minha gripe.',
+          'naldecor-dia',
+          'Naldecor Dia',
+          'Me vê um Naldecor Dia, é o que corta minha gripe.',
         ),
       },
       {
@@ -1894,9 +1894,9 @@ export const SHIFTS = [
         hasReceita: false,
         jaTomaPrincipiosAtivos: [],
         request: pedidoProduto(
-          'valium-5',
-          'Valium® 5mg',
-          'Preciso de um Valium® 5, não durmo faz uma semana. Depois eu trago a receita.',
+          'valion-5',
+          'Valion 5mg',
+          'Preciso de um Valion 5, não durmo faz uma semana. Depois eu trago a receita.',
         ),
       },
       {
@@ -1962,9 +1962,9 @@ export const SHIFTS = [
       ],
       {
         extras: [
-          loteVencido('novalgina-500'),
-          loteVencido('claritin-10'),
-          loteVencido('mucosolvan-adulto'),
+          loteVencido('novalgex-500'),
+          loteVencido('claritex-10'),
+          loteVencido('mucosolvex-adulto'),
         ],
       },
     ),
@@ -2104,7 +2104,7 @@ export const SHIFTS = [
         tags: [],
         hasReceita: true,
         jaTomaPrincipiosAtivos: ['paracetamol'],
-        request: pedidoProduto('tylex-30', 'Tylex® 30mg', 'Trouxe a receita do Tylex® 30.'),
+        request: pedidoProduto('tilexa-30', 'Tilexa 30mg', 'Trouxe a receita do Tilexa 30.'),
       },
       {
         id: 'c8',

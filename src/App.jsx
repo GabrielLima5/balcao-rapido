@@ -90,6 +90,7 @@ export default function App() {
   const [shiftState, setShiftState] = useState(() => createShiftState(SHIFTS[0]))
   const [progress, setProgress] = useState(() => getProgress())
   const [mostrarTermos, setMostrarTermos] = useState(false)
+  const [aceitouTermos, setAceitouTermos] = useState(false)
   const [atendimentoAtivo, setAtendimentoAtivo] = useState(null)
   const [feedback, setFeedback] = useState(null)
   // "−4s" flutuante no cartão de quem acabou de responder uma pergunta
@@ -510,6 +511,8 @@ export default function App() {
             onConquistas={() => setScreen('conquistas')}
             onLoja={() => setScreen('loja')}
             onPresente={() => setMostrarPresente(true)}
+            aceitouTermos={aceitouTermos}
+            onAceitarTermos={setAceitouTermos}
             onTermos={() => setMostrarTermos(true)}
           />
         )}

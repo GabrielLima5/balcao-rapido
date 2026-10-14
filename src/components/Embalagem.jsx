@@ -17,52 +17,51 @@ import './Embalagem.css'
 // --- cor da embalagem -------------------------------------------------------
 //
 // Uma cor por MARCA, não por categoria: o que faz o jogador reconhecer a caixa
-// na gôndola é a cor da marca (Novalgina é vermelha, Naldecon Noite é azul
+// na gôndola é a cor da marca (Novalgex é vermelha, Naldecor Noite é azul
 // escuro), não a classe terapêutica. Com cor por categoria, onze analgésicos
 // viravam onze caixas azuis idênticas.
 //
-// ⚠️ Estas cores são a identidade visual conhecida de cada marca, não amostras
-// tiradas de foto da caixa — vale como reconhecimento, não como referência.
+// ⚠️ Estas são cores livremente escolhidas para cada marca fictícia, não amostras
+// de nenhuma caixa real.
 // Corrigir qualquer uma é trocar um hex aqui; o resto do desenho (faces, faixa,
 // tarja, brilho) se ajusta sozinho a partir dele.
 const COR_DA_MARCA = {
-  Novalgina: '#d3352c',
-  Tylenol: '#c8322b',
-  Advil: '#1f4fa0',
-  Alivium: '#e8762a',
-  Aspirina: '#0f6fb8',
-  Claritin: '#1857a4',
-  Zyrtec: '#3f9c35',
-  Polaramine: '#2b7fa8',
-  Losec: '#6d4b9b',
-  Mylanta: '#1f63b0',
-  Buscopan: '#0e4f9e',
-  Luftal: '#cf3f34',
-  Imosec: '#0f7a5f',
-  Pedialyte: '#1a73b8',
-  Vibral: '#7a4fa0',
-  Fluimucil: '#ef7c1f',
-  Mucosolvan: '#c8342e',
-  Sorine: '#1f7fc4',
-  Bepantol: '#1b74bd',
-  Canesten: '#1160a8',
-  'Gyno-Daktarin': '#b0417c',
-  Zovirax: '#2a63a8',
-  Nizoral: '#b83a2e',
-  CataflamPro: '#d4362c',
-  Amoxil: '#e08a2c',
-  Aradois: '#2f7f8c',
-  Marevan: '#7a5c34',
-  Glifage: '#2f6fb0',
-  'Puran T4': '#6a5aa8',
-  Valium: '#1f4f9c',
-  Tylex: '#2c6e4f',
+  Novalgex: '#d3352c',
+  Tilenex: '#c8322b',
+  Advilon: '#1f4fa0',
+  Alivion: '#e8762a',
+  Aspirix: '#0f6fb8',
+  Claritex: '#1857a4',
+  Zirtek: '#3f9c35',
+  Polaramex: '#2b7fa8',
+  Losek: '#6d4b9b',
+  Mylantax: '#1f63b0',
+  Buscopex: '#0e4f9e',
+  Luftol: '#cf3f34',
+  Imosek: '#0f7a5f',
+  Pediolyte: '#1a73b8',
+  Vibrex: '#7a4fa0',
+  Fluimucyl: '#ef7c1f',
+  Mucosolvex: '#c8342e',
+  Sorinex: '#1f7fc4',
+  Bepantex: '#1b74bd',
+  Canestex: '#1160a8',
+  Zovirex: '#2a63a8',
+  Nizorex: '#b83a2e',
+  CataflexPro: '#d4362c',
+  Amoxilan: '#e08a2c',
+  Aradoze: '#2f7f8c',
+  Marevex: '#7a5c34',
+  Glifex: '#2f6fb0',
+  'Purano T4': '#6a5aa8',
+  Valion: '#1f4f9c',
+  Tilexa: '#2c6e4f',
 }
 
 // Linhas da mesma marca que têm cor própria na prateleira de verdade.
 const COR_DO_PRODUTO = {
-  'naldecon-dia': '#f0a52a',
-  'naldecon-noite': '#23407e',
+  'naldecor-dia': '#f0a52a',
+  'naldecor-noite': '#23407e',
 }
 
 // Genérico não tem marca: a caixa é branca e quem identifica é a faixa amarela
